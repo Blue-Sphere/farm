@@ -1,0 +1,28 @@
+.navbar-layout {
+    display: flex;
+    position: relative;
+    justify-content: space-around;
+    border-bottom: 2px solid #ccc;
+    margin-bottom: 20px;
+}
+
+.nav-item {
+    cursor: pointer;
+    padding: 10px 20px;
+    font-size: 18px;
+    position: relative;
+}
+
+.nav-item.active {
+    color: #007bff;
+}
+
+.underline {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 33.3333%;
+    height: 2px;
+    background-color: #007bff;
+    transition: transform 0.3s ease;
+}
