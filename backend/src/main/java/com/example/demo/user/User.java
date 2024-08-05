@@ -31,6 +31,14 @@ public class User implements Serializable {
     @Column(unique = false)
     private String verificationCode;
 
+    @Column
+    private boolean isAvailable;
+
+    @PrePersist
+    protected void onCreate(){
+        isAvailable = Boolean.TRUE;
+    }
+
     public Integer getId() {
         return id;
     }

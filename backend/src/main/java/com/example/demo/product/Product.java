@@ -34,6 +34,9 @@ public class Product {
     @JoinColumn(name = "added_admin_id", referencedColumnName = "id")
     private Admin addedByAdmin;
 
+    @Column
+    private boolean isAvailable;
+
     public Integer getId() {
         return Id;
     }
@@ -80,6 +83,14 @@ public class Product {
 
     public void setDescription(String description) {
         this.description = description;
+    }
+
+    public boolean isAvailable() {
+        return isAvailable;
+    }
+
+    public void setAvailable(boolean available) {
+        isAvailable = available;
     }
 
     public Admin getAddedByAdmin() {

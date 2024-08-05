@@ -1,5 +1,7 @@
 package com.example.demo.assets;
 
-public interface AssetsRepositoryCustom {
+import java.util.List;
 
+public interface AssetsRepositoryCustom {
+    List<Assets> findAssetsByCriteria(CriteriaSearchAssetsDto criteriaSearchAssetsDto);
 }

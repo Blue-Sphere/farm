@@ -10,7 +10,7 @@ import java.sql.Timestamp;
 import java.time.LocalDateTime;
 
 @Repository
-public interface AssetsRepository extends CrudRepository<Assets, Long> {
+public interface AssetsRepository extends CrudRepository<Assets, Long>, AssetsRepositoryCustom {
 
     @Query("SELECT SUM(a.relationOrder.total) FROM Assets a")
     Integer calculateTotalForOrders();

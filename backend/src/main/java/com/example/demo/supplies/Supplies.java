@@ -33,7 +33,7 @@ public class Supplies {
         this.total = quantity*price;
     }
 
-    private enum SuppliesType{
+    public enum SuppliesType{
         TOOL,
         CONSUMABLE
     }
