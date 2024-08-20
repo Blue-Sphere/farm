@@ -8,6 +8,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
 import java.util.Map;
 
 @RestController
@@ -117,6 +118,13 @@ public class UserController {
             return ResponseEntity.badRequest().body("未成功連接Line帳號: "+e.getMessage());
         }
 
+    }
+
+    @PostMapping(path = "/criteria_search")
+    private ResponseEntity getUserByCriteria(@RequestBody CriteriaSearchUserDto criteriaSearchUserDto){
+        List<User> result = userService.getCriteriaSearchUser(criteriaSearchUserDto);
+
+        return ResponseEntity.ok().body(result);
     }
 
     @GetMapping(path = "/all")

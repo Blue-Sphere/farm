@@ -20,7 +20,7 @@ import {
   styled,
 } from "@mui/material";
 
-import FormSerch from "../../../components/FormSerch";
+import FormSearch from "../../../components/FormSearch";
 import CloseIcon from "@mui/icons-material/Close";
 import { DemoItem } from "@mui/x-date-pickers/internals/demo";
 import { DatePicker, LocalizationProvider } from "@mui/x-date-pickers";
@@ -32,6 +32,19 @@ import RadioGroup from "../../../components/RadioGroup";
 import ShoppingCartIcon from "@mui/icons-material/ShoppingCart";
 import RemoveShoppingCartIcon from "@mui/icons-material/RemoveShoppingCart";
 import useFetch from "../../../components/useFetch";
+
+const formateOrderData = (data: any) => {
+  const rows = data.map((row: any) => ({
+    id: row.id,
+    email: row.boughtByUser.email,
+    items: row.orderItems
+      .map((item: any) => `${item.product.name} x${item.quantity}`)
+      .join(", "),
+    total: row.total,
+  }));
+
+  return rows;
+};
 
 export default function OrderManagement() {
   const [dialogOpen, setDialogOpen] = useState(false);
@@ -64,6 +77,13 @@ export default function OrderManagement() {
     return <p>No data available</p>;
   }
 
+  interface CriteriaSearchDataRowProps {
+    id: number;
+    email: string;
+    items: string;
+    total: number;
+  }
+
   return (
     <>
       <Container>
@@ -91,20 +111,48 @@ export default function OrderManagement() {
           />
         </Row>
 
-        <FormSerch
+        <FormSearch
           label={"訂單總覽查詢"}
+          searchUrl="http://localhost:8080/order/admin/criteria_search"
           showStartTime={true}
           showEndTime={true}
           mutiCheckBoxOptions={{
             label: "查詢選項",
             options: [
-              { name: "待確認訂單", checked: false },
-              { name: "準備中訂單", checked: false },
-              { name: "已完成訂單", checked: false },
+              { name: "待確認", checked: false },
+              { name: "準備中", checked: false },
+              { name: "已完成", checked: false },
             ],
           }}
-          category={{ key1: 123, key2: 456, key3: 789 }}
+          categoryUrl={"http://localhost:8080/product/inventory"}
           showMoneyComparison={true}
+          searchResultColumns={[
+            {
+              field: "id",
+              headerName: "訂單編號",
+              width: 150,
+              editable: false,
+            },
+            {
+              field: "email",
+              headerName: "email",
+              width: 150,
+              editable: false,
+            },
+            {
+              field: "items",
+              headerName: "訂購商品",
+              width: 150,
+              editable: false,
+            },
+            {
+              field: "total",
+              headerName: "總計",
+              width: 150,
+              editable: false,
+            },
+          ]}
+          formatFunction={formateOrderData}
         />
       </Container>
       <DialogAddSupplies

@@ -7,14 +7,20 @@ import { useState } from "react";
 
 interface DrogListProps {
   label: string;
-  items: Record<string, any>;
+  items: { name: string }[];
+  handleItemsNameOnChange: (name: string) => void;
 }
 
 export default function DrogList(props: DrogListProps) {
   const [selectedValue, setSelectedValue] = useState("");
 
   const handleChange = (event: SelectChangeEvent) => {
-    setSelectedValue(event.target.value as string);
+    const newValue = event.target.value as string;
+
+    setSelectedValue(() => {
+      props.handleItemsNameOnChange(newValue);
+      return newValue;
+    });
   };
 
   return (
@@ -29,8 +35,8 @@ export default function DrogList(props: DrogListProps) {
             label={props.label}
             onChange={handleChange}
           >
-            {Object.entries(props.items).map(([key, value]) => {
-              return <MenuItem value={value}>{key}</MenuItem>;
+            {props.items.map((item) => {
+              return <MenuItem value={item.name}>{item.name}</MenuItem>;
             })}
           </Select>
         </FormControl>

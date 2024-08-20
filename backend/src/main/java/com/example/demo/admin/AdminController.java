@@ -1,9 +1,13 @@
 package com.example.demo.admin;
 
+import com.example.demo.assets.Assets;
+import com.example.demo.assets.CriteriaSearchAssetsDto;
 import com.example.demo.security.AuthenticationSecurity;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @CrossOrigin(origins = "*")
@@ -38,6 +42,13 @@ public class AdminController {
             return ResponseEntity.ok().body("");
         }
         return ResponseEntity.badRequest().body("不被接受的token");
+    }
+
+    @PostMapping(path = "/criteria_search")
+    private ResponseEntity getAdminByCriteria(@RequestBody CriteriaSearchAdminDto criteriaSearchAdminDto){
+        List<Admin> result = adminService.getCriteriaSearchAdmin(criteriaSearchAdminDto);
+
+        return ResponseEntity.ok().body(result);
     }
 
 }

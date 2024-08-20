@@ -23,6 +23,14 @@ public class Admin {
     @Column(unique = true)
     private String lineId;
 
+    @Column
+    private boolean isAvailable;
+
+    @PrePersist
+    protected void onCreate(){
+        isAvailable = true;
+    }
+
     public Integer getId() {
         return id;
     }
@@ -61,5 +69,13 @@ public class Admin {
 
     public void setLineId(String lineId) {
         this.lineId = lineId;
+    }
+
+    public boolean isAvailable() {
+        return isAvailable;
+    }
+
+    public void setAvailable(boolean available) {
+        isAvailable = available;
     }
 }

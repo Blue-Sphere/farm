@@ -1,5 +1,7 @@
 package com.example.demo.product;
 
+import com.example.demo.admin.Admin;
+import com.example.demo.admin.CriteriaSearchAdminDto;
 import com.example.demo.security.AuthenticationSecurity;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -65,5 +67,12 @@ public class ProductController {
     public String deleteProduct(@RequestBody Product product){
         productService.deleteProduct(product);
         return "Success";
+    }
+
+    @PostMapping(path = "/criteria_search")
+    private ResponseEntity getProductByCriteria(@RequestBody CriteriaSearchProductDto criteriaSearchProductDto){
+        List<Product> result = productService.getCriteriaSearchProduct(criteriaSearchProductDto);
+
+        return ResponseEntity.ok().body(result);
     }
 }

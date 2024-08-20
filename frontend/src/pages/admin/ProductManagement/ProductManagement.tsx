@@ -16,7 +16,7 @@ import {
   styled,
 } from "@mui/material";
 
-import FormSerch from "../../../components/FormSerch";
+import FormSearch from "../../../components/FormSearch";
 import CloseIcon from "@mui/icons-material/Close";
 import { DemoItem } from "@mui/x-date-pickers/internals/demo";
 import { DatePicker, LocalizationProvider } from "@mui/x-date-pickers";
@@ -64,7 +64,7 @@ export default function ProductManagement() {
           </Col>
         </Row>
 
-        <FormSerch
+        <FormSearch
           label={"物品總覽查詢"}
           showStartTime={false}
           showEndTime={false}

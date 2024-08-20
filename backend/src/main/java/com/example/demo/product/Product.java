@@ -35,7 +35,7 @@ public class Product {
     private Admin addedByAdmin;
 
     @Column
-    private boolean isAvailable;
+    private Boolean isAvailable;
 
     public Integer getId() {
         return Id;
@@ -85,11 +85,11 @@ public class Product {
         this.description = description;
     }
 
-    public boolean isAvailable() {
+    public Boolean isAvailable() {
         return isAvailable;
     }
 
-    public void setAvailable(boolean available) {
+    public void setAvailable(Boolean available) {
         isAvailable = available;
     }
 

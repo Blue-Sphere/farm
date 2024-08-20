@@ -6,6 +6,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 @Service
 public class SuppliesService {
     @Autowired
@@ -19,5 +21,9 @@ public class SuppliesService {
         assetsRepository.save(assets);
         suppliesRepository.save(supplies);
         return ResponseEntity.ok().body("成功新增物品");
+    }
+
+    public List<Supplies> getCriteriaSearchSupplies(CriteriaSearchSuppliesDto criteriaSearchSuppliesDto) {
+        return suppliesRepository.findSuppliesByCriteria(criteriaSearchSuppliesDto);
     }
 }

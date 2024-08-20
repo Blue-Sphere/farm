@@ -1,12 +1,18 @@
 package com.example.demo.assets;
 
+import com.example.demo.View;
+import com.example.demo.order.CriteriaSearchOrderDto;
+import com.example.demo.order.Order;
+import com.fasterxml.jackson.annotation.JsonView;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.ArrayList;
+import java.util.List;
 
 @RestController
 @RequestMapping(path = "/assets")
@@ -44,6 +50,13 @@ public class AssetsController {
     @PostMapping(path = "/month_all_assets_sum")
     public ArrayList<Integer> getMonthAllAssetsSum(){
         return assetsService.getAllMonthAssetsSum();
+    }
+
+    @PostMapping(path = "/criteria_search")
+    private ResponseEntity getOrdersByCriteria(@RequestBody CriteriaSearchAssetsDto criteriaSearchAssetsDto){
+        List<Assets> result = assetsService.getCriteriaSearchAssets(criteriaSearchAssetsDto);
+
+        return ResponseEntity.ok().body(result);
     }
 
 }

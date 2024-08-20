@@ -32,9 +32,9 @@ public class OrderRepositoryCustomImpl implements OrderRepositoryCustom {
             predicates.add(cb.lessThanOrEqualTo(order.get("creationTime"), criteriaSearchOrderDto.getEndTime()));
         }
 
-        if (criteriaSearchOrderDto.getStatusChosen() != null) {
+        if (criteriaSearchOrderDto.getQueryOptions() != null) {
             List<Predicate> statusPredicates = new ArrayList<>();
-            for(String status: criteriaSearchOrderDto.getStatusChosen()) {
+            for(String status: criteriaSearchOrderDto.getQueryOptions()) {
                 statusPredicates.add(cb.equal(order.get("status"), status));
             }
             predicates.add(cb.or(statusPredicates.toArray(new Predicate[0])));
@@ -42,13 +42,13 @@ public class OrderRepositoryCustomImpl implements OrderRepositoryCustom {
 
         if(criteriaSearchOrderDto.getAmountCompare() != null && criteriaSearchOrderDto.getAmountValue() != null){
             switch (criteriaSearchOrderDto.getAmountCompare()){
-                case "大於":
+                case "MORE_THAN":
                     predicates.add(cb.greaterThan(order.get("total"), criteriaSearchOrderDto.getAmountValue()));
                     break;
-                case "小於":
+                case "LESS_THAN":
                     predicates.add(cb.lessThan(order.get("total"), criteriaSearchOrderDto.getAmountValue()));
                     break;
-                case "等於":
+                case "EQUALS":
                     predicates.add(cb.equal(order.get("total"), criteriaSearchOrderDto.getAmountValue()));
                     break;
             }

@@ -20,7 +20,7 @@ import {
   styled,
 } from "@mui/material";
 
-import FormSerch from "../../../components/FormSerch";
+import FormSearch from "../../../components/FormSearch";
 import CloseIcon from "@mui/icons-material/Close";
 import { DemoItem } from "@mui/x-date-pickers/internals/demo";
 import { DatePicker, LocalizationProvider } from "@mui/x-date-pickers";
@@ -58,10 +58,10 @@ export default function Customer() {
           />
         </Row>
 
-        <FormSerch
+        <FormSearch
           label={"會員總覽查詢"}
-          showStartTime={true}
-          showEndTime={true}
+          showStartTime={false}
+          showEndTime={false}
           mutiCheckBoxOptions={{
             label: "查詢選項",
             options: [

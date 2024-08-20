@@ -112,4 +112,8 @@ public class ProductService {
             productRepository.deleteById(productOptional.get().getId());
         }
     }
+
+    public List<Product> getCriteriaSearchProduct(CriteriaSearchProductDto criteriaSearchProductDto) {
+        return productRepository.findProductByCriteria(criteriaSearchProductDto);
+    }
 }

@@ -1,9 +1,13 @@
 package com.example.demo.supplies;
 
+import com.example.demo.admin.Admin;
+import com.example.demo.admin.CriteriaSearchAdminDto;
 import com.example.demo.security.AuthenticationSecurity;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @CrossOrigin(origins = "*")
@@ -22,5 +26,12 @@ public class SuppliesController {
             return ResponseEntity.badRequest().body("不被接受的token");
         }
         return suppliesService.buyNewSupplies(supplies);
+    }
+
+    @PostMapping(path = "/criteria_search")
+    private ResponseEntity getSuppliesByCriteria(@RequestBody CriteriaSearchSuppliesDto criteriaSearchSuppliesDto){
+        List<Supplies> result = suppliesService.getCriteriaSearchSupplies(criteriaSearchSuppliesDto);
+
+        return ResponseEntity.ok().body(result);
     }
 }

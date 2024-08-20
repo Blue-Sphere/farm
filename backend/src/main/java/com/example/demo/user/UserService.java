@@ -21,6 +21,7 @@ import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
+import java.util.List;
 import java.util.Optional;
 import java.util.Scanner;
 import java.util.concurrent.TimeUnit;
@@ -210,5 +211,9 @@ public class UserService {
         }catch(Exception e){
             throw new Exception(e.getMessage());
         }
+    }
+
+    public List<User> getCriteriaSearchUser(CriteriaSearchUserDto criteriaSearchUserDto) {
+        return userRepository.findUserByCriteria(criteriaSearchUserDto);
     }
 }

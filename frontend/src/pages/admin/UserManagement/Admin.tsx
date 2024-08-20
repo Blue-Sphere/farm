@@ -20,7 +20,7 @@ import {
   styled,
 } from "@mui/material";
 
-import FormSerch from "../../../components/FormSerch";
+import FormSearch from "../../../components/FormSearch";
 import CloseIcon from "@mui/icons-material/Close";
 import { DemoItem } from "@mui/x-date-pickers/internals/demo";
 import { DatePicker, LocalizationProvider } from "@mui/x-date-pickers";
@@ -64,7 +64,7 @@ export default function Admin() {
           </Col>
         </Row>
 
-        <FormSerch
+        <FormSearch
           label={"管理者查詢"}
           showStartTime={true}
           showEndTime={true}

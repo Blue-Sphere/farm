@@ -9,7 +9,7 @@ public class CriteriaSearchOrderDto {
 
     private String[] orderItemsName;
 
-    private String[] statusChosen;
+    private String[] queryOptions;
 
     private String amountCompare;
 
@@ -40,12 +40,12 @@ public class CriteriaSearchOrderDto {
         this.orderItemsName = orderItemsName;
     }
 
-    public String[] getStatusChosen() {
-        return statusChosen;
+    public String[] getQueryOptions() {
+        return queryOptions;
     }
 
-    public void setStatusChosen(String[] statusChosen) {
-        this.statusChosen = statusChosen;
+    public void setQueryOptions(String[] queryOptions) {
+        this.queryOptions = queryOptions;
     }
 
     public String getAmountCompare() {

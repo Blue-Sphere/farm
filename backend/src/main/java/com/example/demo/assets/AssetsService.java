@@ -76,4 +76,7 @@ public class AssetsService {
         return allMonthAssetsSum;
     }
 
+    public List<Assets> getCriteriaSearchAssets(CriteriaSearchAssetsDto criteriaSearchAssetsDto) {
+        return assetsRepository.findAssetsByCriteria(criteriaSearchAssetsDto);
+    }
 }

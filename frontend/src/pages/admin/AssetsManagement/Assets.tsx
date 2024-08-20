@@ -4,7 +4,7 @@ import TaskIcon from "@mui/icons-material/Task";
 import CalendarMonth from "@mui/icons-material/CalendarMonth";
 
 import LineGraph from "../../../components/LineGraph";
-import FormSerch from "../../../components/FormSerch";
+import FormSearch from "../../../components/FormSearch";
 import useFetch from "../../../components/useFetch";
 
 interface AssetsProps {
@@ -107,7 +107,7 @@ export default function Assets() {
         </Col>
       </Row>
 
-      <FormSerch
+      <FormSearch
         label={"收支總覽查詢"}
         showStartTime={true}
         showEndTime={true}
