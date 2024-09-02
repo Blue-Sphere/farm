@@ -33,6 +33,8 @@ interface FormSearchProps {
     editable: boolean;
   }[];
   formatFunction: (data: any) => any;
+
+  handleSelectedRowsOnChange: (item: any) => void;
 }
 
 interface MutiOptionProps {
@@ -53,9 +55,13 @@ export default function FormSearch(props: FormSearchProps) {
 
   const [amountValue, setAmountValue] = useState<number>(0);
 
-  const [itemName, setItemName] = useState<string>();
+  const [itemName, setItemName] = useState<string[]>([]);
 
   const [datas, setDatas] = useState<Record<string, any>>();
+
+  useEffect(() => {
+    console.log(mutiOptions);
+  }, [mutiOptions]);
 
   const handleMutiOptionChange = (items: MutiOptionProps[]) => {
     const checkedItems = items.filter((item) => item.checked);
@@ -102,10 +108,6 @@ export default function FormSearch(props: FormSearchProps) {
         setDatas(rows);
       });
   };
-
-  // useEffect(() => {
-  //   console.log("Updated amountComparison:", mutiOptions);
-  // }, [mutiOptions]);
 
   const admin_token = sessionStorage.getItem("admin_token");
 
@@ -197,7 +199,7 @@ export default function FormSearch(props: FormSearchProps) {
                   <MutiOptionCheckBox
                     label={props.mutiCheckBoxOptions.label}
                     options={props.mutiCheckBoxOptions.options}
-                    handleAddOptions={handleMutiOptionChange}
+                    handleMutiOptionOnChange={handleMutiOptionChange}
                   />
                 )}
               </Col>
@@ -278,6 +280,7 @@ export default function FormSearch(props: FormSearchProps) {
                 <MuiDataGrid
                   columns={props.searchResultColumns}
                   datas={datas}
+                  handleSelectedRowsOnchange={props.handleSelectedRowsOnChange}
                 />
               )}
             </Col>
@@ -294,8 +297,10 @@ interface MutiOptionCheckBoxProps {
     name: string;
     checked: boolean;
   }[];
-  handleAddOptions: (item: MutiOptionProps[]) => void;
+
+  handleMutiOptionOnChange: (items: MutiOptionProps[]) => void;
 }
+
 const MutiOptionCheckBox = (props: MutiOptionCheckBoxProps) => {
   const [mutiOption, setMutiOption] = useState(props.options);
 
@@ -306,7 +311,8 @@ const MutiOptionCheckBox = (props: MutiOptionCheckBoxProps) => {
         ...option,
         checked: !allChecked,
       }));
-      props.handleAddOptions(updatedOptions); // 回傳更新後的選項
+      props.handleMutiOptionOnChange(updatedOptions);
+
       return updatedOptions;
     });
   };
@@ -315,10 +321,8 @@ const MutiOptionCheckBox = (props: MutiOptionCheckBoxProps) => {
     (index: number) => (event: React.ChangeEvent<HTMLInputElement>) => {
       const newMutiOption = [...mutiOption];
       newMutiOption[index].checked = event.target.checked;
-      setMutiOption(newMutiOption);
 
-      // 把所有選項回傳給主元件處理
-      props.handleAddOptions(mutiOption);
+      props.handleMutiOptionOnChange(newMutiOption);
     };
 
   return (

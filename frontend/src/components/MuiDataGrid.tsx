@@ -9,6 +9,8 @@ interface MuiDataGridProps {
     editable: boolean;
   }[];
   datas: Record<string, any>[];
+
+  handleSelectedRowsOnchange: (item: any) => void;
 }
 
 export default function MuiDataGrid(props: MuiDataGridProps) {
@@ -57,6 +59,7 @@ export default function MuiDataGrid(props: MuiDataGridProps) {
             },
             backgroundColor: "#F0F0F0",
           }}
+          onRowSelectionModelChange={props.handleSelectedRowsOnchange}
         />
       </Box>
     </div>

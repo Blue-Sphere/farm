@@ -21,10 +21,16 @@ public class Supplies {
     @Column(unique = true)
     private SuppliesType type;
 
+    @Column
+    private String name;
+
+    @Column
     private Integer price;
 
+    @Column
     private Integer quantity;
 
+    @Column
     private Integer total;
 
     @PrePersist
@@ -60,6 +66,14 @@ public class Supplies {
 
     public void setType(SuppliesType type) {
         this.type = type;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
     }
 
     public Integer getPrice() {

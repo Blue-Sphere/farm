@@ -18,7 +18,7 @@ public class OrderItem {
     private Order order;
 
     @JsonView({View.OrderInfo.class})
-    @ManyToOne(targetEntity = Product.class, cascade = CascadeType.ALL)
+    @ManyToOne(targetEntity = Product.class, cascade = CascadeType.MERGE)
     @JoinColumn(name = "product_id", referencedColumnName = "id")
     private Product product;
 

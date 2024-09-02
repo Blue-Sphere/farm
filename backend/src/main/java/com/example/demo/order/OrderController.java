@@ -71,7 +71,7 @@ public class OrderController {
     @PostMapping(path = "/admin/check_order")
     private String checkOrder(@RequestParam Long id){
         orderService.checkOrder(id);
-        return "訂單編號"+id+"已確認";
+        return "訂單編號"+id+"已準備";
     }
 
     @PostMapping(path = "/admin/complete_order")

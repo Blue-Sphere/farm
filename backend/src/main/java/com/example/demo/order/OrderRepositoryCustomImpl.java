@@ -7,6 +7,7 @@ import jakarta.persistence.criteria.*;
 import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 @Component
@@ -34,14 +35,14 @@ public class OrderRepositoryCustomImpl implements OrderRepositoryCustom {
 
         if (criteriaSearchOrderDto.getQueryOptions() != null) {
             List<Predicate> statusPredicates = new ArrayList<>();
-            for(String status: criteriaSearchOrderDto.getQueryOptions()) {
+            for (String status : criteriaSearchOrderDto.getQueryOptions()) {
                 statusPredicates.add(cb.equal(order.get("status"), status));
             }
             predicates.add(cb.or(statusPredicates.toArray(new Predicate[0])));
         }
 
-        if(criteriaSearchOrderDto.getAmountCompare() != null && criteriaSearchOrderDto.getAmountValue() != null){
-            switch (criteriaSearchOrderDto.getAmountCompare()){
+        if (criteriaSearchOrderDto.getAmountCompare() != null && criteriaSearchOrderDto.getAmountValue() != null) {
+            switch (criteriaSearchOrderDto.getAmountCompare()) {
                 case "MORE_THAN":
                     predicates.add(cb.greaterThan(order.get("total"), criteriaSearchOrderDto.getAmountValue()));
                     break;
@@ -59,11 +60,30 @@ public class OrderRepositoryCustomImpl implements OrderRepositoryCustom {
             for (String itemName : criteriaSearchOrderDto.getOrderItemsName()) {
                 productNamePredicates.add(cb.equal(productJoin.get("name"), itemName));
             }
-                predicates.add(cb.or(productNamePredicates.toArray(new Predicate[0])));
+            if (criteriaSearchOrderDto.getOrderItemsName().length == 1) {
+                predicates.add(cb.and(productNamePredicates.toArray(new Predicate[0])));
+            } else {
+                Subquery<Long> subQuery = query.subquery(Long.class);
+                Root<OrderItem> subOrderItem = subQuery.from(OrderItem.class);
+                Join<OrderItem, Product> subProduct = subOrderItem.join("product");
+
+
+                subQuery.select(subOrderItem.get("order").get("id"))
+                        .where(subProduct.get("name").in(criteriaSearchOrderDto.getOrderItemsName()));
+
+
+                subQuery.groupBy(subOrderItem.get("order").get("id"))
+                        .having(cb.equal(cb.countDistinct(subProduct.get("name")), criteriaSearchOrderDto.getOrderItemsName().length));
+
+
+                predicates.add(order.get("id").in(subQuery));
+                query.where(cb.and(
+                        order.get("id").in(subQuery)
+                ));
+            }
+
         }
-
-        query.where(predicates.toArray(new Predicate[0]));
-
+        query.where(cb.and(predicates.toArray(new Predicate[0])));
         return entityManager.createQuery(query).getResultList();
     }
 }

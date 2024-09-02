@@ -7,7 +7,7 @@ import ValueDisplayCard from "../../../components/ValueDisplayCard";
 import PlumbingIcon from "@mui/icons-material/Plumbing";
 import Inventory2Icon from "@mui/icons-material/Inventory2";
 import { Col, Container, Row } from "react-bootstrap";
-import { Box, Button } from "@mui/material";
+import { Box, Button, Grid } from "@mui/material";
 
 import {
   Autocomplete,
@@ -32,11 +32,27 @@ import RadioGroup from "../../../components/RadioGroup";
 import ShoppingCartIcon from "@mui/icons-material/ShoppingCart";
 import RemoveShoppingCartIcon from "@mui/icons-material/RemoveShoppingCart";
 import useFetch from "../../../components/useFetch";
+import { formatDate } from "../../../components/Date/FormatDate";
+import Alert from "../../../components/Alert";
+import { GridRowSelectionModel } from "@mui/x-data-grid";
+import DrogList from "../../../components/DrogList";
+
+export interface Order {
+  id: number;
+  name: string;
+  status: string;
+  orderItems: {
+    name: string;
+    price: number;
+  }[];
+  total: number;
+}
 
 const formateOrderData = (data: any) => {
   const rows = data.map((row: any) => ({
     id: row.id,
     email: row.boughtByUser.email,
+    creationTime: formatDate(row.creationTime),
     items: row.orderItems
       .map((item: any) => `${item.product.name} x${item.quantity}`)
       .join(", "),
@@ -48,6 +64,42 @@ const formateOrderData = (data: any) => {
 
 export default function OrderManagement() {
   const [dialogOpen, setDialogOpen] = useState(false);
+
+  const [selectedRows, setSelectedRows] = useState<GridRowSelectionModel>([]);
+
+  const handleRowsSelectedOnChange = (newSelection: GridRowSelectionModel) => {
+    setSelectedRows(newSelection);
+  };
+
+  const handleExcutedSelectedRows = async (
+    action: "check" | "complete" | "remove"
+  ) => {
+    const deletePromises = selectedRows.map((rowId) =>
+      fetch(
+        `http://localhost:8080/order/admin/${action}_order?id=${rowId.valueOf()}`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${sessionStorage.getItem("admin_token")}`,
+          },
+        }
+      )
+        .then((response) => {
+          if (!response.ok) {
+            throw new Error(`Failed to delete row with ID: ${rowId}`);
+          }
+          return response.json();
+        })
+        .then((result) => ({ success: true, rowId }))
+        .catch((error) => ({ success: false, rowId, error: error.message }))
+    );
+
+    const results = await Promise.all(deletePromises);
+
+    const successfulDeletions = results.filter((result) => result.success);
+    const failedDeletions = results.filter((result) => !result.success);
+  };
 
   const handleDialogClose = () => {
     setDialogOpen(false);
@@ -134,6 +186,12 @@ export default function OrderManagement() {
               editable: false,
             },
             {
+              field: "creationTime",
+              headerName: "訂單日期",
+              width: 150,
+              editable: false,
+            },
+            {
               field: "email",
               headerName: "email",
               width: 150,
@@ -153,7 +211,52 @@ export default function OrderManagement() {
             },
           ]}
           formatFunction={formateOrderData}
+          handleSelectedRowsOnChange={handleRowsSelectedOnChange}
         />
+
+        {selectedRows.length > 0 && (
+          <Row
+            style={{
+              background: "#F0F0F0",
+              margin: "-10px 0px 0px 0px",
+              paddingBottom: "14px",
+              borderRadius: "0px 0px 10px 10px",
+            }}
+          >
+            <Col xs={4}>
+              <Button
+                fullWidth
+                color="info"
+                variant="outlined"
+                onClick={() => handleExcutedSelectedRows("check")}
+              >
+                變更狀態為準備中
+              </Button>
+            </Col>
+
+            <Col xs={4}>
+              <Button
+                fullWidth
+                color="warning"
+                variant="outlined"
+                onClick={() => handleExcutedSelectedRows("complete")}
+              >
+                變更狀態為已完成
+              </Button>
+            </Col>
+
+            <Col xs={4}>
+              <Button
+                fullWidth
+                color="error"
+                variant="outlined"
+                onClick={() => handleExcutedSelectedRows("remove")}
+              >
+                刪除訂單
+              </Button>
+            </Col>
+          </Row>
+        )}
       </Container>
       <DialogAddSupplies
         open={dialogOpen}

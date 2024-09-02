@@ -14,6 +14,19 @@ interface AssetsProps {
   creationTime: Date;
 }
 
+const formateAssetsData = (data: any) => {
+  const rows = data.map((row: any) => ({
+    id: row.id,
+    type: row.type,
+    total:
+      row.order.tosString() == null
+        ? row.relationSupplies.total
+        : row.relationOrder.total,
+  }));
+
+  return rows;
+};
+
 export default function Assets() {
   // const result = useFetch<AssetsProps>("http://localhost:8080/assets/");
 
@@ -66,23 +79,6 @@ export default function Assets() {
 
   const dataKeys = ["pv", "uv"];
 
-  //   const adminToken = sessionStorage.getItem("admin_token");
-  //   if (adminToken === null) {
-  //     return <p>無效的token</p>;
-  //   }
-  //   const result = useFetch<AssetsProps[]>(
-  //     "http://localhost:8080/admin/assets/get",
-  //     "POST",
-  //     adminToken
-  //   );
-
-  //   if (result.isLoading) {
-  //     return <p>Loading...</p>;
-  //   }
-
-  //   if (result.error) {
-  //     return <p>Error: {result.error}</p>;
-  //   }
   return (
     <>
       <Row>
@@ -109,6 +105,7 @@ export default function Assets() {
 
       <FormSearch
         label={"收支總覽查詢"}
+        searchUrl="http://localhost:8080/assets/criteria_search"
         showStartTime={true}
         showEndTime={true}
         mutiCheckBoxOptions={{
@@ -118,8 +115,41 @@ export default function Assets() {
             { name: "費損", checked: false },
           ],
         }}
-        category={{ key1: 123, key2: 456, key3: 789 }}
+        categoryUrl={"http://localhost:8080/product/inventory"}
         showMoneyComparison={true}
+        searchResultColumns={[
+          {
+            field: "id",
+            headerName: "訂單編號",
+            width: 150,
+            editable: false,
+          },
+          {
+            field: "purchaseTime",
+            headerName: "訂單日期",
+            width: 150,
+            editable: false,
+          },
+          {
+            field: "email",
+            headerName: "email",
+            width: 150,
+            editable: false,
+          },
+          {
+            field: "items",
+            headerName: "物品明細",
+            width: 150,
+            editable: false,
+          },
+          {
+            field: "total",
+            headerName: "總計",
+            width: 150,
+            editable: false,
+          },
+        ]}
+        formatFunction={formateAssetsData}
       />
     </>
   );
