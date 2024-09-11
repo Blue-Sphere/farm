@@ -18,7 +18,7 @@ public class Supplies {
     private Date purchaseTime;
 
     @Enumerated(EnumType.STRING)
-    @Column(unique = true)
+    @Column
     private SuppliesType type;
 
     @Column

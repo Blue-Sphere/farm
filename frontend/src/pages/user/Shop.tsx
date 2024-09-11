@@ -15,9 +15,16 @@ interface Product {
 export default function Shop() {
   const [columnCount, setColumnCount] = useState(4);
 
+  const token = sessionStorage.getItem("token");
+
+  if (token === null) {
+    return <p>token不存在</p>;
+  }
+
   const result = useFetch<Product[]>(
     "http://localhost:8080/product/inventory",
-    "GET"
+    "POST",
+    token
   );
 
   if (result.isLoading) {

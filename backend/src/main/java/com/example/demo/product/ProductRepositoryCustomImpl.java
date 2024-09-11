@@ -24,7 +24,7 @@ public class ProductRepositoryCustomImpl implements ProductRepositoryCustom {
         if (criteriaSearchProductDto.getQueryOptions() != null) {
             List<Predicate> statusPredicates = new ArrayList<>();
             for(boolean option:  criteriaSearchProductDto.getQueryOptions()) {
-                statusPredicates.add(cb.equal(product.get("queryOptions"), option));
+                statusPredicates.add(cb.equal(product.get("isAvailable"), option));
             }
             predicates.add(cb.or(statusPredicates.toArray(new Predicate[0])));
         }
@@ -44,7 +44,11 @@ public class ProductRepositoryCustomImpl implements ProductRepositoryCustom {
         }
 
         if (criteriaSearchProductDto.getItemsName() != null) {
-            predicates.add(cb.equal(product.get("name"), criteriaSearchProductDto.getItemsName()));
+            List<Predicate> productNamePredicates = new ArrayList<>();
+            for(String name: criteriaSearchProductDto.getItemsName()){
+                productNamePredicates.add(cb.equal(product.get("name"), name));
+            }
+            predicates.add(cb.or(productNamePredicates.toArray(new Predicate[0])));
         }
 
         query.where(predicates.toArray(new Predicate[0]));

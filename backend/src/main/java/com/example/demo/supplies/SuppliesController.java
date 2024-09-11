@@ -19,6 +19,15 @@ public class SuppliesController {
     @Autowired
     AuthenticationSecurity authenticationSecurity;
 
+    @PostMapping(path = "/get_all")
+    public ResponseEntity getAllSupplies(@RequestHeader("Authorization") String token){
+        String adminToken = token.replace("Bearer ", "");
+        if(!authenticationSecurity.validateAdminsToken(adminToken)){
+            return ResponseEntity.badRequest().body("不被接受的token");
+        }
+        return suppliesService.getAllSupplies();
+    }
+
     @PostMapping(path = "/buy")
     public ResponseEntity buyNewSupplies(@RequestHeader("Authorization") String token, @RequestBody Supplies supplies){
         String adminToken = token.replace("Bearer ", "");

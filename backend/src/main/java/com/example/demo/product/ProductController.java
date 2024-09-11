@@ -31,9 +31,13 @@ public class ProductController {
 
     private Logger logger = LoggerFactory.getLogger(ProductController.class);
 
-    @GetMapping(path = "/inventory")
-    public List<Product> getALLProduct(){
-        return productService.getAllInventory();
+    @PostMapping(path = "/inventory")
+    public ResponseEntity getALLProduct(@RequestHeader("Authorization") String authorization){
+        String token = authorization.replace("Bearer ", "");
+        if(!authenticationSecurity.validateAdminsToken(token)){
+            return ResponseEntity.badRequest().body("不被接受的token");
+        }
+        return ResponseEntity.ok().body(productService.getAllInventory());
     }
 
     @GetMapping(path = "/{id}")
@@ -42,7 +46,7 @@ public class ProductController {
     }
 
     @PostMapping(path = "/admin/add")
-    public ResponseEntity addProduct(Product product,
+    public ResponseEntity addProduct(@ModelAttribute Product product,
                                      @RequestPart("originImage") MultipartFile image, @RequestHeader("Authorization") String authorization, BindingResult result) throws IOException {
 
         product.setImage(image.getBytes());

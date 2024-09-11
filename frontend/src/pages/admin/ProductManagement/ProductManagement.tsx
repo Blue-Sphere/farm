@@ -1,4 +1,4 @@
-import { ChangeEvent, memo, useCallback, useState } from "react";
+import { ChangeEvent, memo, useCallback, useEffect, useState } from "react";
 import ValueDisplayCard from "../../../components/ValueDisplayCard";
 import PlumbingIcon from "@mui/icons-material/Plumbing";
 import Inventory2Icon from "@mui/icons-material/Inventory2";
@@ -27,8 +27,29 @@ import CalculateTotal from "../../../components/Calculate/CalculateTotal";
 import RadioGroup from "../../../components/RadioGroup";
 import ShoppingCartIcon from "@mui/icons-material/ShoppingCart";
 import RemoveShoppingCartIcon from "@mui/icons-material/RemoveShoppingCart";
+import Alert from "../../../components/Alert";
+import { GridRowSelectionModel } from "@mui/x-data-grid/models/gridRowSelectionModel";
+import { convertToBase64 } from "../../../components/Image/ConvertImage";
+
+const formatProductData = (data: any) => {
+  const rows = data.map((row: any) => ({
+    id: row.id,
+    image: row.image,
+    name: row.name,
+    price: row.price,
+    quantity: row.quantity,
+  }));
+
+  return rows;
+};
 
 export default function ProductManagement() {
+  const [selectedRows, setSelectedRows] = useState<GridRowSelectionModel>([]);
+
+  const handleRowsSelectedOnChange = (newSelection: GridRowSelectionModel) => {
+    setSelectedRows(newSelection);
+  };
+
   const [dialogOpen, setDialogOpen] = useState(false);
 
   const handleDialogClose = () => {
@@ -65,18 +86,59 @@ export default function ProductManagement() {
         </Row>
 
         <FormSearch
-          label={"物品總覽查詢"}
-          showStartTime={false}
-          showEndTime={false}
+          label={"商品總覽查詢"}
+          searchUrl="http://localhost:8080/product/criteria_search"
           mutiCheckBoxOptions={{
             label: "查詢選項",
             options: [
-              { name: "上架中", checked: false },
-              { name: "未上架", checked: false },
+              { name: "上架中", value: true, checked: false },
+              { name: "未上架", value: false, checked: false },
             ],
           }}
-          category={{ key1: 123, key2: 456, key3: 789 }}
+          categoryUrl={"http://localhost:8080/product/inventory"}
           showMoneyComparison={true}
+          searchResultColumns={[
+            {
+              field: "id",
+              headerName: "商品編號",
+              width: 150,
+              editable: false,
+            },
+            {
+              field: "image",
+              headerName: "照片預覽",
+              width: 150,
+              editable: false,
+              renderCell: (params) => (
+                <img
+                  src={`data:image/jpeg;base64,${params.value}`}
+                  width={50}
+                  height={50}
+                  style={{ marginLeft: -10 }}
+                />
+              ),
+            },
+            {
+              field: "name",
+              headerName: "商品名稱",
+              width: 150,
+              editable: false,
+            },
+            {
+              field: "price",
+              headerName: "商品價格",
+              width: 150,
+              editable: false,
+            },
+            {
+              field: "quantity",
+              headerName: "剩餘數量",
+              width: 150,
+              editable: false,
+            },
+          ]}
+          formatFunction={formatProductData}
+          handleSelectedRowsOnChange={handleRowsSelectedOnChange}
         />
       </Container>
       <DialogAddSupplies
@@ -104,6 +166,8 @@ interface DialogAddSuppliesProps {
 }
 
 const DialogAddSupplies = memo((props: DialogAddSuppliesProps) => {
+  const [isAvailable, setIsAvailable] = useState(false);
+
   const [productName, setProductName] = useState("");
 
   const handleProdictNameChange = (
@@ -124,14 +188,17 @@ const DialogAddSupplies = memo((props: DialogAddSuppliesProps) => {
     setQuantity(Number(event.target.value));
   };
 
-  const [image, setImage] = useState<string | null>(null);
+  const [imageSrc, setImageSrc] = useState<string | null>(null);
+
+  const [image, setImage] = useState<File | null>(null);
 
   const handleImageUpload = (event: ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
     if (file) {
+      setImage(file);
       const reader = new FileReader();
       reader.onloadend = () => {
-        setImage(reader.result as string);
+        setImageSrc(reader.result as string);
       };
       reader.readAsDataURL(file);
     }
@@ -143,6 +210,45 @@ const DialogAddSupplies = memo((props: DialogAddSuppliesProps) => {
     event: React.ChangeEvent<HTMLInputElement>
   ) => {
     setDescription(event.target.value);
+  };
+
+  const handleAddNewProductOnClick = () => {
+    const product = JSON.stringify({
+      name: productName,
+      isAvailable: isAvailable,
+      price: price,
+      quantity: quantity,
+    });
+    const formData = new FormData();
+    formData.append("name", productName);
+    formData.append("isAvailable", String(isAvailable));
+    formData.append("price", price.toString());
+    formData.append("quantity", quantity.toString());
+    formData.append("description", description.toString());
+    if (image) formData.append("originImage", image);
+
+    fetch("http://localhost:8080/product/admin/add", {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${sessionStorage.getItem("admin_token")}`,
+      },
+      body: formData,
+    }).then(async (response) => {
+      const message = await response.text();
+      if (!response.ok) {
+        Alert({
+          title: response.status.toString(),
+          text: message,
+          icon: "error",
+        });
+        throw new Error(message);
+      }
+      Alert({
+        title: response.status.toString(),
+        text: message,
+        icon: "success",
+      });
+    });
   };
 
   return (
@@ -205,6 +311,7 @@ const DialogAddSupplies = memo((props: DialogAddSuppliesProps) => {
               <RadioGroup
                 label="商品狀態"
                 items={{ 上架中: true, 未上架: false }}
+                handleRadioButtonOnChange={setIsAvailable}
               />
             </Box>
           </Col>
@@ -271,10 +378,10 @@ const DialogAddSupplies = memo((props: DialogAddSuppliesProps) => {
                 type="file"
                 onChange={handleImageUpload}
               />
-              {image && (
+              {imageSrc && (
                 <Box sx={{ mt: 2 }}>
                   <img
-                    src={image}
+                    src={imageSrc}
                     alt="Uploaded"
                     style={{
                       maxWidth: "100%",
@@ -326,6 +433,7 @@ const DialogAddSupplies = memo((props: DialogAddSuppliesProps) => {
               }}
               variant="contained"
               color="info"
+              onClick={handleAddNewProductOnClick}
             >
               確認並新增
             </Button>

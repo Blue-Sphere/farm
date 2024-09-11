@@ -6,6 +6,9 @@ import CalendarMonth from "@mui/icons-material/CalendarMonth";
 import LineGraph from "../../../components/LineGraph";
 import FormSearch from "../../../components/FormSearch";
 import useFetch from "../../../components/useFetch";
+import { formatDate } from "../../../components/Date/FormatDate";
+import { useState } from "react";
+import { GridRowSelectionModel } from "@mui/x-data-grid/models/gridRowSelectionModel";
 
 interface AssetsProps {
   id: number;
@@ -14,12 +17,20 @@ interface AssetsProps {
   creationTime: Date;
 }
 
-const formateAssetsData = (data: any) => {
+const formatAssetsData = (data: any) => {
   const rows = data.map((row: any) => ({
     id: row.id,
+    relationId:
+      row.relationOrder == null
+        ? row.relationSupplies.id
+        : row.relationOrder.id,
     type: row.type,
+    creationTime:
+      row.relationOrder === null
+        ? row.relationSupplies.purchaseTime
+        : row.relationOrder.creationTime,
     total:
-      row.order.tosString() == null
+      row.relationOrder === null
         ? row.relationSupplies.total
         : row.relationOrder.total,
   }));
@@ -28,7 +39,11 @@ const formateAssetsData = (data: any) => {
 };
 
 export default function Assets() {
-  // const result = useFetch<AssetsProps>("http://localhost:8080/assets/");
+  const [selectedRows, setSelectedRows] = useState<GridRowSelectionModel>([]);
+
+  const handleRowsSelectedOnChange = (newSelection: GridRowSelectionModel) => {
+    setSelectedRows(newSelection);
+  };
 
   const data = [
     {
@@ -108,37 +123,37 @@ export default function Assets() {
         searchUrl="http://localhost:8080/assets/criteria_search"
         showStartTime={true}
         showEndTime={true}
+        categoryUrl={null}
         mutiCheckBoxOptions={{
           label: "查詢選項",
           options: [
-            { name: "收益", checked: false },
-            { name: "費損", checked: false },
+            { name: "收益", value: "PROFIT", checked: false },
+            { name: "費損", value: "LOSS", checked: false },
           ],
         }}
-        categoryUrl={"http://localhost:8080/product/inventory"}
         showMoneyComparison={true}
         searchResultColumns={[
           {
             field: "id",
-            headerName: "訂單編號",
+            headerName: "收支編號",
+            width: 75,
+            editable: false,
+          },
+          {
+            field: "relationId",
+            headerName: "關聯編號",
+            width: 75,
+            editable: false,
+          },
+          {
+            field: "type",
+            headerName: "類別",
             width: 150,
             editable: false,
           },
           {
-            field: "purchaseTime",
-            headerName: "訂單日期",
-            width: 150,
-            editable: false,
-          },
-          {
-            field: "email",
-            headerName: "email",
-            width: 150,
-            editable: false,
-          },
-          {
-            field: "items",
-            headerName: "物品明細",
+            field: "creationTime",
+            headerName: "建立日期",
             width: 150,
             editable: false,
           },
@@ -149,7 +164,8 @@ export default function Assets() {
             editable: false,
           },
         ]}
-        formatFunction={formateAssetsData}
+        formatFunction={formatAssetsData}
+        handleSelectedRowsOnChange={handleRowsSelectedOnChange}
       />
     </>
   );

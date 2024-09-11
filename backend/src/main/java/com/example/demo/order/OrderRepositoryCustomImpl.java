@@ -55,12 +55,12 @@ public class OrderRepositoryCustomImpl implements OrderRepositoryCustom {
             }
         }
 
-        if (criteriaSearchOrderDto.getOrderItemsName() != null) {
+        if (criteriaSearchOrderDto.getItemsName() != null) {
             List<Predicate> productNamePredicates = new ArrayList<>();
-            for (String itemName : criteriaSearchOrderDto.getOrderItemsName()) {
+            for (String itemName : criteriaSearchOrderDto.getItemsName()) {
                 productNamePredicates.add(cb.equal(productJoin.get("name"), itemName));
             }
-            if (criteriaSearchOrderDto.getOrderItemsName().length == 1) {
+            if (criteriaSearchOrderDto.getItemsName().length == 1) {
                 predicates.add(cb.and(productNamePredicates.toArray(new Predicate[0])));
             } else {
                 Subquery<Long> subQuery = query.subquery(Long.class);
@@ -69,11 +69,11 @@ public class OrderRepositoryCustomImpl implements OrderRepositoryCustom {
 
 
                 subQuery.select(subOrderItem.get("order").get("id"))
-                        .where(subProduct.get("name").in(criteriaSearchOrderDto.getOrderItemsName()));
+                        .where(subProduct.get("name").in(criteriaSearchOrderDto.getItemsName()));
 
 
                 subQuery.groupBy(subOrderItem.get("order").get("id"))
-                        .having(cb.equal(cb.countDistinct(subProduct.get("name")), criteriaSearchOrderDto.getOrderItemsName().length));
+                        .having(cb.equal(cb.countDistinct(subProduct.get("name")), criteriaSearchOrderDto.getItemsName().length));
 
 
                 predicates.add(order.get("id").in(subQuery));

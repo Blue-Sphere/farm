@@ -19,7 +19,7 @@ public class CriteriaSearchProductDto {
         EQUALS
     }
 
-    public String itemsName;
+    public String[] itemsName;
 
     public boolean[] getQueryOptions() {
         return queryOptions;
@@ -45,11 +45,11 @@ public class CriteriaSearchProductDto {
         this.amountValue = amountValue;
     }
 
-    public String getItemsName() {
+    public String[] getItemsName() {
         return itemsName;
     }
 
-    public void setItemsName(String itemsName) {
+    public void setItemsName(String[] itemsName) {
         this.itemsName = itemsName;
     }
 }

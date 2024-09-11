@@ -7,7 +7,7 @@ public class CriteriaSearchOrderDto {
 
     private Timestamp endTime;
 
-    private String[] orderItemsName;
+    private String[] itemsName;
 
     private String[] queryOptions;
 
@@ -32,12 +32,12 @@ public class CriteriaSearchOrderDto {
         this.endTime = endTime;
     }
 
-    public String[] getOrderItemsName() {
-        return orderItemsName;
+    public String[] getItemsName() {
+        return itemsName;
     }
 
-    public void setOrderItemsName(String[] orderItemsName) {
-        this.orderItemsName = orderItemsName;
+    public void setItemsName(String[] itemsName) {
+        this.itemsName = itemsName;
     }
 
     public String[] getQueryOptions() {

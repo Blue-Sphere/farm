@@ -33,12 +33,30 @@ import ShoppingCartIcon from "@mui/icons-material/ShoppingCart";
 import RemoveShoppingCartIcon from "@mui/icons-material/RemoveShoppingCart";
 import PersonIcon from "@mui/icons-material/Person";
 import PersonOffIcon from "@mui/icons-material/PersonOff";
+import { GridRowSelectionModel } from "@mui/x-data-grid/models/gridRowSelectionModel";
+
+const formatUserData = (data: any) => {
+  const rows = data.map((row: any) => ({
+    id: row.id,
+    email: row.email,
+    name: row.name,
+    isAvailable: row.isAvailable ? "白名單" : "黑名單",
+  }));
+
+  return rows;
+};
 
 export default function Customer() {
   const [dialogOpen, setDialogOpen] = useState(false);
 
   const handleDialogClose = () => {
     setDialogOpen(false);
+  };
+
+  const [selectedRows, setSelectedRows] = useState<GridRowSelectionModel>([]);
+
+  const handleRowsSelectedOnChange = (newSelection: GridRowSelectionModel) => {
+    setSelectedRows(newSelection);
   };
   return (
     <>
@@ -59,18 +77,47 @@ export default function Customer() {
         </Row>
 
         <FormSearch
-          label={"會員總覽查詢"}
+          label={"使用者查詢"}
+          searchUrl="http://localhost:8080/user/criteria_search"
           showStartTime={false}
           showEndTime={false}
+          categoryUrl={null}
           mutiCheckBoxOptions={{
             label: "查詢選項",
             options: [
-              { name: "會員", checked: false },
-              { name: "黑名單會員", checked: false },
+              { name: "白名單", value: true, checked: false },
+              { name: "黑名單", value: false, checked: false },
             ],
           }}
-          category={null}
           showMoneyComparison={false}
+          searchResultColumns={[
+            {
+              field: "id",
+              headerName: "使用者編號",
+              width: 150,
+              editable: false,
+            },
+            {
+              field: "email",
+              headerName: "信箱",
+              width: 150,
+              editable: false,
+            },
+            {
+              field: "name",
+              headerName: "姓名",
+              width: 150,
+              editable: false,
+            },
+            {
+              field: "isAvailable",
+              headerName: "狀態",
+              width: 150,
+              editable: false,
+            },
+          ]}
+          formatFunction={formatUserData}
+          handleSelectedRowsOnChange={handleRowsSelectedOnChange}
         />
       </Container>
       <DialogAddSupplies

@@ -23,8 +23,8 @@ public class AssetsRepositoryCustomImpl implements AssetsRepositoryCustom{
         CriteriaQuery<Assets> query = cb.createQuery(Assets.class);
         Root<Assets> assets = query.from(Assets.class);
 
-        Join<Assets, Order> orderJoin = assets.join("relationOrder");
-        Join<Assets, Supplies> suppliesJoin = assets.join("relationSupplies");
+        Join<Assets, Order> orderJoin = assets.join("relationOrder", JoinType.LEFT);
+        Join<Assets, Supplies> suppliesJoin = assets.join("relationSupplies", JoinType.LEFT);
 
         List<Predicate> predicates = new ArrayList<>();
 
@@ -34,14 +34,14 @@ public class AssetsRepositoryCustomImpl implements AssetsRepositoryCustom{
         }
 
         if (criteriaSearchAssetsDto.getEndTime() != null) {
-            predicates.add(cb.lessThanOrEqualTo(orderJoin.get("creationTime"), new Timestamp(criteriaSearchAssetsDto.getStartTime().getTime())));
-            predicates.add(cb.lessThanOrEqualTo(suppliesJoin.get("purchaseTime"), criteriaSearchAssetsDto.getStartTime()));
+            predicates.add(cb.lessThanOrEqualTo(orderJoin.get("creationTime"), new Timestamp(criteriaSearchAssetsDto.getEndTime().getTime())));
+            predicates.add(cb.lessThanOrEqualTo(suppliesJoin.get("purchaseTime"), criteriaSearchAssetsDto.getEndTime()));
         }
 
         if (criteriaSearchAssetsDto.getQueryOptions() != null) {
             List<Predicate> statusPredicates = new ArrayList<>();
             for(Assets.TransactionType option:  criteriaSearchAssetsDto.getQueryOptions()) {
-                statusPredicates.add(cb.equal(assets.get("queryOptions"), option.toString()));
+                statusPredicates.add(cb.equal(assets.get("type"), option.toString()));
             }
             predicates.add(cb.or(statusPredicates.toArray(new Predicate[0])));
         }
@@ -62,14 +62,6 @@ public class AssetsRepositoryCustomImpl implements AssetsRepositoryCustom{
                     break;
             }
         }
-
-//        if (criteriaSearchAssetsDto.getOrderItemsName() != null) {
-//            List<Predicate> productNamePredicates = new ArrayList<>();
-//            for (String itemName : criteriaSearchAssetsDto.getOrderItemsName()) {
-//                productNamePredicates.add(cb.equal(productJoin.get("name"), itemName));
-//            }
-//            predicates.add(cb.or(productNamePredicates.toArray(new Predicate[0])));
-//        }
 
         query.where(predicates.toArray(new Predicate[0]));
 

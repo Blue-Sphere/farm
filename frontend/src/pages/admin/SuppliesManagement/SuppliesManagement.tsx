@@ -25,13 +25,54 @@ import dayjs from "dayjs";
 import CountControl from "../../../components/Calculate/CountControl";
 import CalculateTotal from "../../../components/Calculate/CalculateTotal";
 import RadioGroup from "../../../components/RadioGroup";
+import Alert from "../../../components/Alert";
+import useFetch from "../../../components/useFetch";
+import { formatDate } from "../../../components/Date/FormatDate";
+import { GridRowSelectionModel } from "@mui/x-data-grid/models/gridRowSelectionModel";
+
+const formatSuppliesData = (data: any) => {
+  const rows = data.map((row: any) => ({
+    id: row.id,
+    purchaseTime: formatDate(row.purchaseTime),
+    name: row.name,
+    quantity: row.quantity,
+    total: row.total,
+  }));
+
+  return rows;
+};
 
 export default function SuppliesManagement() {
   const [dialogOpen, setDialogOpen] = useState(false);
-
   const handleDialogClose = () => {
     setDialogOpen(false);
   };
+
+  const [selectedRows, setSelectedRows] = useState<GridRowSelectionModel>([]);
+
+  const handleRowsSelectedOnChange = (newSelection: GridRowSelectionModel) => {
+    setSelectedRows(newSelection);
+  };
+
+  const adminToken = sessionStorage.getItem("admin_token");
+
+  if (adminToken === null) {
+    return <p>無效的token</p>;
+  }
+
+  const result = useFetch<{}[]>(
+    "http://localhost:8080/supplies/get_all",
+    "POST",
+    adminToken
+  );
+
+  if (result.isLoading) {
+    return <p>Loading...</p>;
+  }
+
+  if (result.error) {
+    return <p>Error: {result.error}</p>;
+  }
   return (
     <>
       <Container>
@@ -64,23 +105,58 @@ export default function SuppliesManagement() {
 
         <FormSearch
           label={"物品總覽查詢"}
+          searchUrl="http://localhost:8080/supplies/criteria_search"
           showStartTime={true}
           showEndTime={true}
           mutiCheckBoxOptions={{
             label: "查詢選項",
             options: [
-              { name: "工具", checked: false },
-              { name: "消耗品", checked: false },
+              { name: "工具", value: "TOOL", checked: false },
+              { name: "消耗品", value: "CONSUMABLE", checked: false },
             ],
           }}
-          category={{ key1: 123, key2: 456, key3: 789 }}
+          categoryUrl={"http://localhost:8080/supplies/get_all"}
           showMoneyComparison={true}
+          searchResultColumns={[
+            {
+              field: "id",
+              headerName: "物品編號",
+              width: 150,
+              editable: false,
+            },
+            {
+              field: "purchaseTime",
+              headerName: "購入日期",
+              width: 150,
+              editable: false,
+            },
+            {
+              field: "name",
+              headerName: "物品名稱",
+              width: 150,
+              editable: false,
+            },
+            {
+              field: "quantity",
+              headerName: "購入數量",
+              width: 150,
+              editable: false,
+            },
+            {
+              field: "total",
+              headerName: "總計",
+              width: 150,
+              editable: false,
+            },
+          ]}
+          formatFunction={formatSuppliesData}
+          handleSelectedRowsOnChange={handleRowsSelectedOnChange}
         />
       </Container>
       <DialogAddSupplies
         open={dialogOpen}
         onClose={handleDialogClose}
-        suppliesName={["test", "test2"]}
+        suppliesName={result.data?.map((supplies) => supplies.name)}
       />
     </>
   );
@@ -102,7 +178,13 @@ interface DialogAddSuppliesProps {
 }
 
 const DialogAddSupplies = memo((props: DialogAddSuppliesProps) => {
-  const [price, setPrice] = useState<number>(0);
+  const [purchaseTime, setPurchaseTime] = useState<Date>(new Date());
+
+  const [type, setType] = useState<"TOOL" | "CONSUMABLE">();
+
+  const [name, setName] = useState<string>("");
+
+  const [price, setPrice] = useState<number>();
 
   const handlePriceChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setPrice(Number(event.target.value));
@@ -112,6 +194,38 @@ const DialogAddSupplies = memo((props: DialogAddSuppliesProps) => {
 
   const handleQuantityChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setQuantity(Number(event.target.value));
+  };
+
+  const handleBuyNewSuppliesOnClick = () => {
+    fetch("http://localhost:8080/supplies/buy", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${sessionStorage.getItem("admin_token")}`,
+      },
+      body: JSON.stringify({
+        purchaseTime: purchaseTime,
+        type: type,
+        name: name,
+        price: price,
+        quantity: quantity,
+      }),
+    }).then(async (response) => {
+      const message = await response.text();
+      if (!response.ok) {
+        Alert({
+          title: response.status.toString(),
+          text: message,
+          icon: "error",
+        });
+        throw new Error(message);
+      }
+      Alert({
+        title: response.status.toString(),
+        text: message,
+        icon: "success",
+      });
+    });
   };
 
   return (
@@ -149,7 +263,17 @@ const DialogAddSupplies = memo((props: DialogAddSuppliesProps) => {
           <Col xs={12}>
             <DemoItem>
               <LocalizationProvider dateAdapter={AdapterDayjs}>
-                <DatePicker maxDate={dayjs()} label="購入時間" />
+                <DatePicker
+                  maxDate={dayjs()}
+                  label="購入時間"
+                  value={dayjs(purchaseTime)}
+                  onInit
+                  onChange={(dateTimeValue) => {
+                    if (dateTimeValue) {
+                      setPurchaseTime(dateTimeValue.toDate());
+                    }
+                  }}
+                />
               </LocalizationProvider>
             </DemoItem>
           </Col>
@@ -158,12 +282,19 @@ const DialogAddSupplies = memo((props: DialogAddSuppliesProps) => {
         <Row style={{ margin: "20px 10px 0px 10px" }}>
           <Col xs={12}>
             <Autocomplete
+              freeSolo
               style={{ width: "100%" }}
               disablePortal
               options={props.suppliesName}
               sx={{ width: 300 }}
               renderInput={(params) => (
-                <TextField {...params} label="物品名稱" />
+                <TextField
+                  {...params}
+                  label="物品名稱"
+                  value={name}
+                  onSelect={(event) => setName(event.target.value)}
+                  onChange={(event) => setName(event.target.value)}
+                />
               )}
             />
           </Col>
@@ -186,7 +317,8 @@ const DialogAddSupplies = memo((props: DialogAddSuppliesProps) => {
             >
               <RadioGroup
                 label="物品種類"
-                items={{ 消耗品: "supplies", 工具: "tools" }}
+                items={{ 消耗品: "CONSUMABLE", 工具: "TOOL" }}
+                handleRadioButtonOnChange={setType}
               />
             </Box>
           </Col>
@@ -254,6 +386,7 @@ const DialogAddSupplies = memo((props: DialogAddSuppliesProps) => {
               }}
               variant="contained"
               color="info"
+              onClick={handleBuyNewSuppliesOnClick}
             >
               確認並新增
             </Button>

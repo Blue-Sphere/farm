@@ -35,7 +35,7 @@ public class SuppliesRepositoryCustomImpl implements SuppliesRepositoryCustom{
         if (criteriaSearchSuppliesDto.getQueryOptions() != null) {
             List<Predicate> statusPredicates = new ArrayList<>();
             for(Supplies.SuppliesType option:  criteriaSearchSuppliesDto.getQueryOptions()) {
-                statusPredicates.add(cb.equal(supplies.get("queryOptions"), option.toString()));
+                statusPredicates.add(cb.equal(supplies.get("type"), option.toString()));
             }
             predicates.add(cb.or(statusPredicates.toArray(new Predicate[0])));
         }

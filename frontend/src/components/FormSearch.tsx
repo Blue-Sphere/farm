@@ -17,6 +17,7 @@ import MuiDataGrid from "./MuiDataGrid";
 import { Dayjs } from "dayjs";
 import Alert from "./Alert";
 import useFetch from "./useFetch";
+import { GridColDef } from "@mui/x-data-grid/models/colDef/gridColDef";
 
 interface FormSearchProps {
   label: string;
@@ -24,21 +25,16 @@ interface FormSearchProps {
   showEndTime: boolean;
   mutiCheckBoxOptions: MutiOptionCheckBoxProps | null;
   showMoneyComparison: boolean;
-  categoryUrl: string;
+  categoryUrl: string | null;
   searchUrl: string;
-  searchResultColumns: {
-    field: string;
-    headerName: string;
-    width: number;
-    editable: boolean;
-  }[];
+  searchResultColumns: readonly GridColDef<Record<string, any>>[];
   formatFunction: (data: any) => any;
 
   handleSelectedRowsOnChange: (item: any) => void;
 }
 
 interface MutiOptionProps {
-  name: string;
+  value: string;
   checked: boolean;
 }
 
@@ -65,7 +61,7 @@ export default function FormSearch(props: FormSearchProps) {
 
   const handleMutiOptionChange = (items: MutiOptionProps[]) => {
     const checkedItems = items.filter((item) => item.checked);
-    const checkedSection = checkedItems.map((item) => item.name);
+    const checkedSection = checkedItems.map((item) => item.value);
     setMutiOptions(checkedSection);
   };
 
@@ -80,7 +76,7 @@ export default function FormSearch(props: FormSearchProps) {
       queryOptions: mutiOptions,
       amountCompare: amountComparison,
       amountValue: amountValue,
-      orderItemsName: itemName,
+      itemsName: itemName,
     };
     fetch(props.searchUrl, {
       method: "POST",
@@ -105,6 +101,7 @@ export default function FormSearch(props: FormSearchProps) {
       .then((data) => {
         setIsDataGridVisible(true);
         const rows = props.formatFunction(data);
+        console.log(rows);
         setDatas(rows);
       });
   };
@@ -115,22 +112,25 @@ export default function FormSearch(props: FormSearchProps) {
     return <p>admin_token為null</p>;
   }
 
-  const categories = useFetch<{ name: string }[]>(
-    props.categoryUrl,
-    "GET",
-    admin_token
-  );
+  let categories;
+  if (props.categoryUrl !== null) {
+    categories = useFetch<{ name: string }[]>(
+      props.categoryUrl,
+      "POST",
+      admin_token
+    );
 
-  if (categories.isLoading) {
-    return <p>Loading...</p>;
-  }
+    if (categories.isLoading) {
+      return <p>Loading...</p>;
+    }
 
-  if (categories.error) {
-    return <p>Error {categories.error}</p>;
-  }
+    if (categories.error) {
+      return <p>Error {categories.error}</p>;
+    }
 
-  if (categories.data === null) {
-    return <p>Error {categories.error}</p>;
+    if (categories.data === null) {
+      return <p>Error {categories.error}</p>;
+    }
   }
 
   return (
@@ -254,15 +254,17 @@ export default function FormSearch(props: FormSearchProps) {
             </Row>
 
             {/* 品項 */}
-            <Row style={{ marginLeft: 10, marginRight: 10, marginTop: 10 }}>
-              <Col xs={12}>
-                <DrogList
-                  label="品項包含"
-                  items={categories.data}
-                  handleItemsNameOnChange={setItemName}
-                />
-              </Col>
-            </Row>
+            {categories && (
+              <Row style={{ marginLeft: 10, marginRight: 10, marginTop: 10 }}>
+                <Col xs={12}>
+                  <DrogList
+                    label="品項包含"
+                    items={categories.data}
+                    handleItemsNameOnChange={setItemName}
+                  />
+                </Col>
+              </Row>
+            )}
 
             <Row style={{ marginLeft: 10, marginRight: 10, marginTop: 10 }}>
               <Col xs={12}>
@@ -295,6 +297,7 @@ interface MutiOptionCheckBoxProps {
   label: string;
   options: {
     name: string;
+    value: any;
     checked: boolean;
   }[];
 
@@ -350,6 +353,7 @@ const MutiOptionCheckBox = (props: MutiOptionCheckBoxProps) => {
           {mutiOption.map((option, index) => (
             <FormControlLabel
               label={option.name}
+              value={option.value}
               control={
                 <Checkbox
                   checked={option.checked}

@@ -171,9 +171,9 @@ export default function OrderManagement() {
           mutiCheckBoxOptions={{
             label: "查詢選項",
             options: [
-              { name: "待確認", checked: false },
-              { name: "準備中", checked: false },
-              { name: "已完成", checked: false },
+              { name: "待確認", value: "待確認", checked: false },
+              { name: "準備中", value: "準備中", checked: false },
+              { name: "已完成", value: "已完成", checked: false },
             ],
           }}
           categoryUrl={"http://localhost:8080/product/inventory"}

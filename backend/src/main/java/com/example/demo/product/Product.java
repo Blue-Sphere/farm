@@ -85,12 +85,12 @@ public class Product {
         this.description = description;
     }
 
-    public Boolean isAvailable() {
+    public Boolean getIsAvailable() {
         return isAvailable;
     }
 
-    public void setAvailable(Boolean available) {
-        isAvailable = available;
+    public void setIsAvailable(Boolean isAvailable) {
+        this.isAvailable = isAvailable;
     }
 
     public Admin getAddedByAdmin() {

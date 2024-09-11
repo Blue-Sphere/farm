@@ -7,6 +7,7 @@ import { Box, RadioGroup as MuiRadioGroup } from "@mui/material";
 interface RadioGroupProps {
   label: string;
   items: Record<string, any>;
+  handleRadioButtonOnChange: (value: any) => void;
 }
 
 export default function RadioGroup(props: RadioGroupProps) {
@@ -16,6 +17,9 @@ export default function RadioGroup(props: RadioGroupProps) {
       <MuiRadioGroup
         aria-labelledby="demo-radio-buttons-group-label"
         name="radio-buttons-group"
+        onChange={(event) =>
+          props.handleRadioButtonOnChange(event.target.value)
+        }
       >
         {Object.entries(props.items).map(([key, value]) => (
           <FormControlLabel value={value} control={<Radio />} label={key} />

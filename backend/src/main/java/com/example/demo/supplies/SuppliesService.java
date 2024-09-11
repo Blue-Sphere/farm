@@ -7,6 +7,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class SuppliesService {
@@ -16,10 +17,17 @@ public class SuppliesService {
     @Autowired
     AssetsRepository assetsRepository;
 
+    public ResponseEntity getAllSupplies(){
+        Iterable<Supplies> allSupplies = suppliesRepository.findAll();
+        return ResponseEntity.ok().body(allSupplies);
+    }
+
     public ResponseEntity buyNewSupplies(Supplies supplies){
-        Assets assets = new Assets(supplies);
+        Supplies savedSupplies = suppliesRepository.save(supplies);
+
+        Assets assets = new Assets(savedSupplies);
         assetsRepository.save(assets);
-        suppliesRepository.save(supplies);
+
         return ResponseEntity.ok().body("成功新增物品");
     }
 
