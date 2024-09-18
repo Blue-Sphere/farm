@@ -70,7 +70,7 @@ export default function LineGraph(props: LineGraphProps) {
                   type="monotone"
                   dataKey={key}
                   stroke={index % 2 ? "#8884d8" : "#82ca9d"}
-                  activeDot={index % 2 ? { r: 8 } : {}}
+                  activeDot={index % 2 ? {} : { r: 8 }}
                 />
               );
             })}

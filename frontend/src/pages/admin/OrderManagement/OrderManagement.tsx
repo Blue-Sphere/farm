@@ -176,7 +176,7 @@ export default function OrderManagement() {
               { name: "已完成", value: "已完成", checked: false },
             ],
           }}
-          categoryUrl={"http://localhost:8080/product/inventory"}
+          categoryUrl={"http://localhost:8080/product/get_all"}
           showMoneyComparison={true}
           searchResultColumns={[
             {

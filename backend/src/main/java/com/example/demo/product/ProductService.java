@@ -61,6 +61,18 @@ public class ProductService {
         return productRepository.findAllInventory();
     }
 
+    public Product getInventoryById(Integer id){
+        Optional<Product> optionalProduct = productRepository.findInventoryById(id);
+        if(optionalProduct.isPresent()){
+            return optionalProduct.get();
+        }
+        return null;
+    }
+
+    public Iterable<Product> getAllProduct(){
+        return productRepository.findAll();
+    }
+
     public Product getProductById(Integer Id){
         Optional<Product> optionalProduct = productRepository.findById(Id);
         if(optionalProduct.isPresent()){

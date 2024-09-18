@@ -37,6 +37,15 @@ public class SuppliesController {
         return suppliesService.buyNewSupplies(supplies);
     }
 
+    @PostMapping(path = "/remove")
+    public ResponseEntity removeSupplies(@RequestHeader("Authorization") String token, @RequestParam Long id){
+        String adminToken = token.replace("Bearer ", "");
+        if(!authenticationSecurity.validateAdminsToken(adminToken)){
+            return ResponseEntity.badRequest().body("不被接受的token");
+        }
+        return suppliesService.removeSupplies(id);
+    }
+
     @PostMapping(path = "/criteria_search")
     private ResponseEntity getSuppliesByCriteria(@RequestBody CriteriaSearchSuppliesDto criteriaSearchSuppliesDto){
         List<Supplies> result = suppliesService.getCriteriaSearchSupplies(criteriaSearchSuppliesDto);

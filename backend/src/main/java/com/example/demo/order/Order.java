@@ -1,6 +1,7 @@
 package com.example.demo.order;
 
 import com.example.demo.View;
+import com.example.demo.assets.Assets;
 import com.example.demo.user.User;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonView;
@@ -19,6 +20,10 @@ public class Order {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @JsonView({View.OrderInfo.class})
     private Long id;
+
+    @OneToOne(targetEntity = Assets.class, cascade = CascadeType.ALL, orphanRemoval = true)
+    @JoinColumn(name = "relation_assets_id", referencedColumnName = "id")
+    private Assets assets;
 
     @JsonView({View.OrderInfo.class})
     @Temporal(TemporalType.TIMESTAMP)
@@ -64,6 +69,14 @@ public class Order {
 
     public void setId(Long id) {
         this.id = id;
+    }
+
+    public Assets getAssets() {
+        return assets;
+    }
+
+    public void setAssets(Assets assets) {
+        this.assets = assets;
     }
 
     public Timestamp getCreationTime() {

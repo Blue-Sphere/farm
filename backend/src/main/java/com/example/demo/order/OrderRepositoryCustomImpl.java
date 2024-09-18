@@ -83,7 +83,7 @@ public class OrderRepositoryCustomImpl implements OrderRepositoryCustom {
             }
 
         }
-        query.where(cb.and(predicates.toArray(new Predicate[0])));
+        query.where(cb.or(predicates.toArray(new Predicate[0])));
         return entityManager.createQuery(query).getResultList();
     }
 }

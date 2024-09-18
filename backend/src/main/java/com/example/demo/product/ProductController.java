@@ -31,18 +31,32 @@ public class ProductController {
 
     private Logger logger = LoggerFactory.getLogger(ProductController.class);
 
-    @PostMapping(path = "/inventory")
-    public ResponseEntity getALLProduct(@RequestHeader("Authorization") String authorization){
+    @GetMapping(path = "/inventory")
+    public ResponseEntity getAllInventory(){
+        return ResponseEntity.ok().body(productService.getAllInventory());
+    }
+
+    @GetMapping(path = "/inventory/{id}")
+    public ResponseEntity getInventoryById(@PathVariable(value = "id") Integer id){
+        return ResponseEntity.ok().body(productService.getInventoryById(id));
+    }
+
+    @PostMapping(path = "/get_all")
+    public ResponseEntity getAllProduct(@RequestHeader("Authorization") String authorization){
         String token = authorization.replace("Bearer ", "");
         if(!authenticationSecurity.validateAdminsToken(token)){
             return ResponseEntity.badRequest().body("不被接受的token");
         }
-        return ResponseEntity.ok().body(productService.getAllInventory());
+        return ResponseEntity.ok().body(productService.getAllProduct());
     }
 
-    @GetMapping(path = "/{id}")
-    public Product getProduct(@PathVariable(value = "id") Integer Id){
-        return productService.getProductById(Id);
+    @PostMapping(path = "/get_all/{id}")
+    public ResponseEntity getProductById(@RequestHeader("Authorization") String authorization, @PathVariable(value = "id") Integer Id){
+        String token = authorization.replace("Bearer ", "");
+        if(!authenticationSecurity.validateAdminsToken(token)){
+            return ResponseEntity.badRequest().body("不被接受的token");
+        }
+        return ResponseEntity.ok().body(productService.getProductById(Id));
     }
 
     @PostMapping(path = "/admin/add")

@@ -81,7 +81,9 @@ function CartItem(props: CartItemProps) {
   };
 
   useEffect(() => {
-    fetch(`http://localhost:8080/product/${props.productId}`, { method: "GET" })
+    fetch(`http://localhost:8080/product/inventory/${props.productId}`, {
+      method: "GET",
+    })
       .then(async (response) => {
         if (!response.ok) {
           const errorMessage = await response.json();
@@ -114,128 +116,139 @@ function CartItem(props: CartItemProps) {
     }
   }, [itemChecked, count]);
 
+  useEffect(() => {
+    console.log(product?.[0]);
+  }, [product]);
+
   return (
     <List sx={{ width: "100%", bgcolor: "background.paper" }}>
-      <ListItem alignItems="center" sx={{ height: "100px" }}>
-        <ListItemIcon>
-          <Checkbox
-            checked={itemChecked}
-            onClick={() => setItemchecked(!itemChecked)}
-          />
-        </ListItemIcon>
-        <ListItemAvatar>
-          <Avatar
-            alt="Product Image"
-            src={`data:image/jpeg;base64,${product?.image}`}
-          />
-        </ListItemAvatar>
-        <Box alignItems="flex-end" width="100%">
-          <Grid container spacing={2} alignItems="flex-end">
-            <Grid item xs={3}>
-              <Box display="flex" flexDirection="column">
-                <ListItemText
-                  primary={product?.name}
-                  secondary={
-                    <>
-                      <Typography
-                        sx={{ display: "inline" }}
-                        component="span"
-                        variant="body2"
-                        color="text.primary"
-                      >
-                        單價
-                      </Typography>
-                      <Typography>{product?.price} 新台幣 / 斤</Typography>
-                    </>
-                  }
-                />
-              </Box>
-            </Grid>
-            <Grid item xs={3}>
-              <Box display="flex" flexDirection="column">
-                <ListItemText
-                  secondary={
-                    <>
-                      <Typography
-                        sx={{ display: "inline" }}
-                        component="span"
-                        variant="body2"
-                        color="text.primary"
-                      >
-                        數量
-                      </Typography>
-                      <Typography>
-                        <Box display="flex" alignItems="center">
-                          <div
-                            style={{
-                              display: "flex",
-                              justifyContent: "center",
-                              alignItems: "center",
-                            }}
-                          >
+      {product ? (
+        <ListItem alignItems="center" sx={{ height: "100px" }}>
+          <ListItemIcon>
+            <Checkbox
+              checked={itemChecked}
+              onClick={() => setItemchecked(!itemChecked)}
+            />
+          </ListItemIcon>
+          <ListItemAvatar>
+            <Avatar
+              alt="Product Image"
+              src={`data:image/jpeg;base64,${product?.image}`}
+            />
+          </ListItemAvatar>
+          <Box alignItems="flex-end" width="100%">
+            <Grid container spacing={2} alignItems="flex-end">
+              <Grid item xs={3}>
+                <Box display="flex" flexDirection="column">
+                  <ListItemText
+                    primary={product?.name}
+                    secondary={
+                      <>
+                        <Typography
+                          sx={{ display: "inline" }}
+                          component="span"
+                          variant="body2"
+                          color="text.primary"
+                        >
+                          單價
+                        </Typography>
+                        <Typography>{product?.price} 新台幣 / 斤</Typography>
+                      </>
+                    }
+                  />
+                </Box>
+              </Grid>
+              <Grid item xs={3}>
+                <Box display="flex" flexDirection="column">
+                  <ListItemText
+                    secondary={
+                      <>
+                        <Typography
+                          sx={{ display: "inline" }}
+                          component="span"
+                          variant="body2"
+                          color="text.primary"
+                        >
+                          數量
+                        </Typography>
+                        <Typography>
+                          <Box display="flex" alignItems="center">
                             <div
-                              style={{ marginRight: "5px", cursor: "pointer" }}
-                              onClick={decrementCount}
+                              style={{
+                                display: "flex",
+                                justifyContent: "center",
+                                alignItems: "center",
+                              }}
                             >
-                              <RemoveCircleTwoToneIcon color="inherit" />
+                              <div
+                                style={{
+                                  marginRight: "5px",
+                                  cursor: "pointer",
+                                }}
+                                onClick={decrementCount}
+                              >
+                                <RemoveCircleTwoToneIcon color="inherit" />
+                              </div>
+                              <input
+                                type="number"
+                                min="0"
+                                max="100"
+                                value={count}
+                                readOnly
+                                style={{ marginRight: "5px", width: 30 }}
+                              />
+                              <div
+                                onClick={incrementCount}
+                                style={{ cursor: "pointer" }}
+                              >
+                                <AddCircleTwoToneIcon color="inherit" />
+                              </div>
                             </div>
-                            <input
-                              type="number"
-                              min="0"
-                              max="100"
-                              value={count}
-                              readOnly
-                              style={{ marginRight: "5px", width: 30 }}
-                            />
-                            <div
-                              onClick={incrementCount}
-                              style={{ cursor: "pointer" }}
-                            >
-                              <AddCircleTwoToneIcon color="inherit" />
-                            </div>
-                          </div>
-                        </Box>
-                      </Typography>
-                    </>
-                  }
-                />
-              </Box>
+                          </Box>
+                        </Typography>
+                      </>
+                    }
+                  />
+                </Box>
+              </Grid>
+              <Grid item xs={3}>
+                <Box flexDirection="column" alignItems="flex-end">
+                  <ListItemText
+                    sx={{ marginLeft: 3 }}
+                    style={{ display: "flex", alignItems: "flex-end" }}
+                    secondary={
+                      <>
+                        <Typography
+                          sx={{ display: "inline" }}
+                          component="span"
+                          variant="body2"
+                          color="text.primary"
+                        >
+                          總計
+                        </Typography>
+                        <Typography>{product?.price * count} 元</Typography>
+                      </>
+                    }
+                  />
+                </Box>
+              </Grid>
+              <Grid item xs={3}>
+                <Box display="flex" flexDirection="column">
+                  <ListItemText
+                    sx={{ marginLeft: 1 }}
+                    onClick={handleDeleteCartItem}
+                    style={{ cursor: "pointer" }}
+                  >
+                    <DeleteOutlineIcon color="inherit" />
+                  </ListItemText>
+                </Box>
+              </Grid>
             </Grid>
-            <Grid item xs={3}>
-              <Box flexDirection="column" alignItems="flex-end">
-                <ListItemText
-                  sx={{ marginLeft: 3 }}
-                  style={{ display: "flex", alignItems: "flex-end" }}
-                  secondary={
-                    <>
-                      <Typography
-                        sx={{ display: "inline" }}
-                        component="span"
-                        variant="body2"
-                        color="text.primary"
-                      >
-                        總計
-                      </Typography>
-                      <Typography>{product?.price * count} 元</Typography>
-                    </>
-                  }
-                />
-              </Box>
-            </Grid>
-            <Grid item xs={3}>
-              <Box display="flex" flexDirection="column">
-                <ListItemText
-                  sx={{ marginLeft: 1 }}
-                  onClick={handleDeleteCartItem}
-                  style={{ cursor: "pointer" }}
-                >
-                  <DeleteOutlineIcon color="inherit" />
-                </ListItemText>
-              </Box>
-            </Grid>
-          </Grid>
-        </Box>
-      </ListItem>
+          </Box>
+        </ListItem>
+      ) : (
+        <Typography>加載中...</Typography>
+      )}
       <Divider
         variant="middle"
         style={{ borderWidth: "1px", borderColor: "gray" }}

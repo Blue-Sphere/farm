@@ -23,8 +23,7 @@ export default function Shop() {
 
   const result = useFetch<Product[]>(
     "http://localhost:8080/product/inventory",
-    "POST",
-    token
+    "GET"
   );
 
   if (result.isLoading) {

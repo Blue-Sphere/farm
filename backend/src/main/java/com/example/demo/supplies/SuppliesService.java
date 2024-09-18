@@ -23,12 +23,17 @@ public class SuppliesService {
     }
 
     public ResponseEntity buyNewSupplies(Supplies supplies){
-        Supplies savedSupplies = suppliesRepository.save(supplies);
+        Assets assets = new Assets(supplies);
+        supplies.setAssets(assets);
 
-        Assets assets = new Assets(savedSupplies);
-        assetsRepository.save(assets);
+        suppliesRepository.save(supplies);
 
         return ResponseEntity.ok().body("成功新增物品");
+    }
+
+    public ResponseEntity removeSupplies(Long suppliesId){
+        suppliesRepository.deleteById(suppliesId);
+        return ResponseEntity.ok().body("成功刪除購買紀錄："+suppliesId);
     }
 
     public List<Supplies> getCriteriaSearchSupplies(CriteriaSearchSuppliesDto criteriaSearchSuppliesDto) {

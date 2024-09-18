@@ -51,7 +51,7 @@ public class ProductRepositoryCustomImpl implements ProductRepositoryCustom {
             predicates.add(cb.or(productNamePredicates.toArray(new Predicate[0])));
         }
 
-        query.where(predicates.toArray(new Predicate[0]));
+        query.where(cb.or(predicates.toArray(new Predicate[0])));
 
         return entityManager.createQuery(query).getResultList();
     }

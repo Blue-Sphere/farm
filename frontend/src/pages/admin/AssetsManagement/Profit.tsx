@@ -43,52 +43,92 @@ interface AssetsProps {
 export default function Profit() {
   const data = [
     {
-      name: "Page A",
-      lines: { uv: 4000, pv: 2400, amt: 2400 },
+      name: "一月",
+      lines: { 去年: 4000, 當年: 2400, amt: 2400 },
     },
     {
-      name: "Page B",
-      lines: { uv: 3000, pv: 1398, amt: 2210 },
+      name: "二月",
+      lines: { 去年: 3000, 當年: 1398, amt: 2210 },
     },
     {
-      name: "Page C",
+      name: "三月",
       lines: {
-        uv: 2000,
-        pv: 9800,
+        去年: 2000,
+        當年: 9800,
         amt: 2290,
       },
     },
     {
-      name: "Page D",
-      lines: { uv: 2780, pv: 3908, amt: 2000 },
+      name: "四月",
+      lines: { 去年: 2780, 當年: 3908, amt: 2000 },
     },
     {
-      name: "Page E",
+      name: "五月",
       lines: {
-        uv: 1890,
-        pv: 4800,
+        去年: 1890,
+        當年: 4800,
         amt: 2181,
       },
     },
     {
-      name: "Page F",
+      name: "六月",
       lines: {
-        uv: 2390,
-        pv: 3800,
+        去年: 2390,
+        當年: 3800,
         amt: 2500,
       },
     },
     {
-      name: "Page G",
+      name: "七月",
       lines: {
-        uv: 3490,
-        pv: 4300,
+        去年: 3490,
+        當年: 4300,
+        amt: 2100,
+      },
+    },
+    {
+      name: "八月",
+      lines: {
+        去年: 3490,
+        當年: 4300,
+        amt: 2100,
+      },
+    },
+    {
+      name: "九月",
+      lines: {
+        去年: 3490,
+        當年: 4300,
+        amt: 2100,
+      },
+    },
+    {
+      name: "十月",
+      lines: {
+        去年: 3490,
+        當年: 4300,
+        amt: 2100,
+      },
+    },
+    {
+      name: "十一月",
+      lines: {
+        去年: 3490,
+        當年: 4300,
+        amt: 2100,
+      },
+    },
+    {
+      name: "十二月",
+      lines: {
+        去年: 3490,
+        當年: 4300,
         amt: 2100,
       },
     },
   ];
 
-  const dataKeys = ["pv", "uv"];
+  const dataKeys = ["當年", "去年"];
 
   //   const adminToken = sessionStorage.getItem("admin_token");
   //   if (adminToken === null) {

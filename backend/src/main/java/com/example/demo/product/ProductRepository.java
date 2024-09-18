@@ -17,4 +17,7 @@ public interface ProductRepository extends CrudRepository<Product, Integer>, Pro
     @Query("SELECT NEW Product(p.Id, p.name, p.price, p.quantity, p.image) FROM Product p WHERE p.quantity != 0")
     List<Product> findAllInventory();
 
+    @Query("SELECT NEW Product(p.Id, p.name, p.price, p.quantity, p.image) FROM Product p WHERE p.quantity != 0 AND p.id = :id")
+    Optional<Product> findInventoryById(Integer id);
+
 }

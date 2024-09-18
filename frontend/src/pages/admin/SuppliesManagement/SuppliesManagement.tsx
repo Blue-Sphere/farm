@@ -54,6 +54,33 @@ export default function SuppliesManagement() {
     setSelectedRows(newSelection);
   };
 
+  const handleExcutedSelectedRows = async (
+    action: "check" | "complete" | "remove"
+  ) => {
+    const deletePromises = selectedRows.map((rowId) =>
+      fetch(`http://localhost:8080/supplies/remove?id=${rowId.valueOf()}`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${sessionStorage.getItem("admin_token")}`,
+        },
+      })
+        .then((response) => {
+          if (!response.ok) {
+            throw new Error(`Failed to delete row with ID: ${rowId}`);
+          }
+          return response.json();
+        })
+        .then((result) => ({ success: true, rowId }))
+        .catch((error) => ({ success: false, rowId, error: error.message }))
+    );
+
+    const results = await Promise.all(deletePromises);
+
+    const successfulDeletions = results.filter((result) => result.success);
+    const failedDeletions = results.filter((result) => !result.success);
+  };
+
   const adminToken = sessionStorage.getItem("admin_token");
 
   if (adminToken === null) {
@@ -153,6 +180,27 @@ export default function SuppliesManagement() {
           handleSelectedRowsOnChange={handleRowsSelectedOnChange}
         />
       </Container>
+      {selectedRows.length > 0 && (
+        <Row
+          style={{
+            background: "#F0F0F0",
+            margin: "-10px 12px 0px 12px",
+            paddingBottom: "14px",
+            borderRadius: "0px 0px 10px 10px",
+          }}
+        >
+          <Col xs={12}>
+            <Button
+              fullWidth
+              color="error"
+              variant="outlined"
+              onClick={() => handleExcutedSelectedRows("remove")}
+            >
+              移除購買紀錄
+            </Button>
+          </Col>
+        </Row>
+      )}
       <DialogAddSupplies
         open={dialogOpen}
         onClose={handleDialogClose}

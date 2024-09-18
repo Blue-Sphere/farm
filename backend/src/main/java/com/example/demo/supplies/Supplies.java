@@ -1,6 +1,8 @@
 package com.example.demo.supplies;
 
+import com.example.demo.assets.Assets;
 import com.example.demo.order.Order;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 
 import java.sql.Date;
@@ -13,6 +15,11 @@ public class Supplies {
     @Column(unique = true)
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
+    @JsonIgnore
+    @OneToOne(targetEntity = Assets.class, cascade = CascadeType.ALL, orphanRemoval = true)
+    @JoinColumn(name = "relation_assets_id", referencedColumnName = "id")
+    private Assets assets;
 
     @Column
     private Date purchaseTime;
@@ -50,6 +57,14 @@ public class Supplies {
 
     public void setId(Long id) {
         this.id = id;
+    }
+
+    public Assets getAssets() {
+        return assets;
+    }
+
+    public void setAssets(Assets assets) {
+        this.assets = assets;
     }
 
     public Date getPurchaseTime() {

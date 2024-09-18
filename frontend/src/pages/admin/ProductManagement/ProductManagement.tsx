@@ -95,7 +95,7 @@ export default function ProductManagement() {
               { name: "未上架", value: false, checked: false },
             ],
           }}
-          categoryUrl={"http://localhost:8080/product/inventory"}
+          categoryUrl={"http://localhost:8080/product/get_all"}
           showMoneyComparison={true}
           searchResultColumns={[
             {

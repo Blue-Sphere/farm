@@ -63,7 +63,7 @@ public class AssetsRepositoryCustomImpl implements AssetsRepositoryCustom{
             }
         }
 
-        query.where(predicates.toArray(new Predicate[0]));
+        query.where(cb.or(predicates.toArray(new Predicate[0])));
 
         return entityManager.createQuery(query).getResultList();
     }

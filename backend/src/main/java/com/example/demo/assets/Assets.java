@@ -21,11 +21,11 @@ public class Assets {
     @Column
     private TransactionType type;
 
-    @OneToOne(targetEntity = Order.class, cascade = CascadeType.ALL)
+    @OneToOne(targetEntity = Order.class, mappedBy = "assets", cascade = CascadeType.MERGE)
     @JoinColumn(name = "relation_order_id", referencedColumnName = "id")
     private Order relationOrder;
 
-    @OneToOne(targetEntity = Supplies.class, cascade = CascadeType.ALL)
+    @OneToOne(targetEntity = Supplies.class, mappedBy = "assets", cascade = CascadeType.MERGE)
     @JoinColumn(name = "relation_supplies_id", referencedColumnName = "id")
     private Supplies relationSupplies;
 

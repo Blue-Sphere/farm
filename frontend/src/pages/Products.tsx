@@ -11,8 +11,8 @@ export default function Products() {
   const [columnCount, setColumnCount] = useState(4);
 
   const result = useFetch<Product[]>(
-    "http://localhost:8080/product/inventory",
-    "GET"
+    "http://localhost:8080/product/get_all",
+    "POST"
   );
 
   if (result.isLoading) {
