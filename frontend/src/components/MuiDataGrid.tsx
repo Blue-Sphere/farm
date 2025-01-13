@@ -1,5 +1,11 @@
 import Box from "@mui/material/Box/Box";
-import { DataGrid, GridColDef } from "@mui/x-data-grid";
+import {
+  DataGrid,
+  GridColDef,
+  GridRowModel,
+  GridRowsProp,
+} from "@mui/x-data-grid";
+import { useState } from "react";
 
 interface MuiDataGridProps {
   columns: {
@@ -11,6 +17,7 @@ interface MuiDataGridProps {
   datas: Record<string, any>[];
 
   handleSelectedRowsOnchange: (item: any) => void;
+  handleProcessRowUpdate: (newRow: GridRowModel) => Promise<GridRowModel>;
 }
 
 export default function MuiDataGrid(props: MuiDataGridProps) {
@@ -60,6 +67,7 @@ export default function MuiDataGrid(props: MuiDataGridProps) {
             backgroundColor: "#F0F0F0",
           }}
           onRowSelectionModelChange={props.handleSelectedRowsOnchange}
+          processRowUpdate={props.handleProcessRowUpdate}
         />
       </Box>
     </div>

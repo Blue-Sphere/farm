@@ -30,7 +30,7 @@ public class Product {
     @Column
     private String description;
 
-    @ManyToOne(targetEntity = Admin.class, cascade = CascadeType.ALL)
+    @ManyToOne(targetEntity = Admin.class, cascade = CascadeType.MERGE )
     @JoinColumn(name = "added_admin_id", referencedColumnName = "id")
     private Admin addedByAdmin;
 

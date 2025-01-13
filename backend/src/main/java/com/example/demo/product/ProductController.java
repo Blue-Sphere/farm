@@ -82,8 +82,8 @@ public class ProductController {
     }
 
     @PostMapping(path = "/admin/delete")
-    public String deleteProduct(@RequestBody Product product){
-        productService.deleteProduct(product);
+    public String deleteProduct(@RequestBody Integer productId){
+        productService.deleteProduct(productId);
         return "Success";
     }
 

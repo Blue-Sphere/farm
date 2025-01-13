@@ -5,19 +5,20 @@ import {
   FormControlLabel,
   TextField,
 } from "@mui/material";
+import { GridColDef } from "@mui/x-data-grid/models/colDef/gridColDef";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs/AdapterDayjs";
 import { DatePicker } from "@mui/x-date-pickers/DatePicker/DatePicker";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider/LocalizationProvider";
 import { DemoItem } from "@mui/x-date-pickers/internals/demo/DemoContainer";
+import { Dayjs } from "dayjs";
 import React, { useEffect, useState } from "react";
 import { Col, Row } from "react-bootstrap";
-import RadioGroup from "./RadioGroup";
-import DrogList from "./DrogList";
-import MuiDataGrid from "./MuiDataGrid";
-import { Dayjs } from "dayjs";
 import Alert from "./Alert";
+import DrogList from "./DrogList";
+import { useRowUpdater } from "./Hooks/useGridRowUpdater";
+import MuiDataGrid from "./MuiDataGrid";
+import RadioGroup from "./RadioGroup";
 import useFetch from "./useFetch";
-import { GridColDef } from "@mui/x-data-grid/models/colDef/gridColDef";
 
 interface FormSearchProps {
   label: string;
@@ -28,6 +29,7 @@ interface FormSearchProps {
   categoryUrl: string | null;
   searchUrl: string;
   searchResultColumns: readonly GridColDef<Record<string, any>>[];
+  rowUpdaterPath: string;
   formatFunction: (data: any) => any;
 
   handleSelectedRowsOnChange: (item: any) => void;
@@ -104,6 +106,19 @@ export default function FormSearch(props: FormSearchProps) {
         console.log(rows);
         setDatas(rows);
       });
+  };
+
+  const { updateRow } = useRowUpdater(props.rowUpdaterPath);
+
+  const handleRowUpdate = async (newRow: any) => {
+    const updatedRow = await updateRow(newRow);
+    if (updatedRow) {
+      // 如果更新成功，可以進一步處理資料，如更新本地狀態
+      console.log("更新成功：", updatedRow);
+    } else {
+      console.error("更新失敗，回滾數據");
+    }
+    return updatedRow || newRow; // 如果失敗，返回舊數據以防 DataGrid 還原
   };
 
   const admin_token = sessionStorage.getItem("admin_token");
@@ -283,6 +298,7 @@ export default function FormSearch(props: FormSearchProps) {
                   columns={props.searchResultColumns}
                   datas={datas}
                   handleSelectedRowsOnchange={props.handleSelectedRowsOnChange}
+                  handleProcessRowUpdate={handleRowUpdate}
                 />
               )}
             </Col>

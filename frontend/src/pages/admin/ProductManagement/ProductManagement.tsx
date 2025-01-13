@@ -1,35 +1,26 @@
-import { ChangeEvent, memo, useCallback, useEffect, useState } from "react";
-import ValueDisplayCard from "../../../components/ValueDisplayCard";
-import PlumbingIcon from "@mui/icons-material/Plumbing";
-import Inventory2Icon from "@mui/icons-material/Inventory2";
-import { Col, Container, Row } from "react-bootstrap";
 import { Box, Button } from "@mui/material";
+import { ChangeEvent, memo, useState } from "react";
+import { Col, Container, Row } from "react-bootstrap";
+import ValueDisplayCard from "../../../components/ValueDisplayCard";
 
 import {
-  Autocomplete,
   Dialog,
   DialogContent,
   DialogTitle,
   IconButton,
   TextField,
-  Typography,
   styled,
 } from "@mui/material";
 
-import FormSearch from "../../../components/FormSearch";
 import CloseIcon from "@mui/icons-material/Close";
-import { DemoItem } from "@mui/x-date-pickers/internals/demo";
-import { DatePicker, LocalizationProvider } from "@mui/x-date-pickers";
-import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
-import dayjs from "dayjs";
-import CountControl from "../../../components/Calculate/CountControl";
-import CalculateTotal from "../../../components/Calculate/CalculateTotal";
-import RadioGroup from "../../../components/RadioGroup";
-import ShoppingCartIcon from "@mui/icons-material/ShoppingCart";
 import RemoveShoppingCartIcon from "@mui/icons-material/RemoveShoppingCart";
-import Alert from "../../../components/Alert";
+import ShoppingCartIcon from "@mui/icons-material/ShoppingCart";
+import { useGridApiRef } from "@mui/x-data-grid";
 import { GridRowSelectionModel } from "@mui/x-data-grid/models/gridRowSelectionModel";
-import { convertToBase64 } from "../../../components/Image/ConvertImage";
+import Alert from "../../../components/Alert";
+import CalculateTotal from "../../../components/Calculate/CalculateTotal";
+import FormSearch from "../../../components/FormSearch";
+import RadioGroup from "../../../components/RadioGroup";
 
 const formatProductData = (data: any) => {
   const rows = data.map((row: any) => ({
@@ -46,8 +37,38 @@ const formatProductData = (data: any) => {
 export default function ProductManagement() {
   const [selectedRows, setSelectedRows] = useState<GridRowSelectionModel>([]);
 
+  const apiRef = useGridApiRef();
+
   const handleRowsSelectedOnChange = (newSelection: GridRowSelectionModel) => {
     setSelectedRows(newSelection);
+  };
+
+  const handleExcutedSelectedRows = async (action: "update" | "delete") => {
+    console.log("選取的行完整資料：", selectedRows);
+    const deletePromises = selectedRows.map((row) => {
+      console.log(row);
+      fetch(`http://localhost:8080/product/admin/${action}`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${sessionStorage.getItem("admin_token")}`,
+        },
+        body: JSON.stringify(row),
+      })
+        .then((response) => {
+          if (!response.ok) {
+            throw new Error(`Failed to excute row with ID: ${row.valueOf()}`);
+          }
+          return response.json();
+        })
+        .then((result) => ({ success: true, row }))
+        .catch((error) => ({ success: false, row, error: error.message }));
+    });
+
+    const results = await Promise.all(deletePromises);
+
+    const successfulDeletions = results.filter((result) => result.success);
+    const failedDeletions = results.filter((result) => !result.success);
   };
 
   const [dialogOpen, setDialogOpen] = useState(false);
@@ -122,24 +143,62 @@ export default function ProductManagement() {
               field: "name",
               headerName: "商品名稱",
               width: 150,
-              editable: false,
+              editable: true,
+              type: "string",
+              preProcessEditCellProps: (params) => {
+                const hasError = !params.props.value;
+                return { ...params.props, error: hasError };
+              },
             },
             {
               field: "price",
               headerName: "商品價格",
               width: 150,
-              editable: false,
+              editable: true,
+              type: "number",
+              preProcessEditCellProps: (params) => {
+                const hasError = isNaN(params.props.value);
+                return { ...params.props, error: hasError };
+              },
             },
             {
               field: "quantity",
               headerName: "剩餘數量",
               width: 150,
-              editable: false,
+              editable: true,
+              type: "number",
+              preProcessEditCellProps: (params) => {
+                const hasError = isNaN(params.props.value);
+                return { ...params.props, error: hasError };
+              },
             },
           ]}
+          rowUpdaterPath="http://localhost:8080/product/admin/update"
           formatFunction={formatProductData}
           handleSelectedRowsOnChange={handleRowsSelectedOnChange}
         />
+
+        {selectedRows.length > 0 && (
+          <Row
+            style={{
+              background: "#F0F0F0",
+              margin: "-10px 0px 0px 0px",
+              paddingBottom: "14px",
+              borderRadius: "0px 0px 10px 10px",
+            }}
+          >
+            <Col xs={12}>
+              <Button
+                fullWidth
+                color="error"
+                variant="outlined"
+                onClick={() => handleExcutedSelectedRows("delete")}
+              >
+                移除商品
+              </Button>
+            </Col>
+          </Row>
+        )}
       </Container>
       <DialogAddSupplies
         open={dialogOpen}

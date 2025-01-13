@@ -1,10 +1,11 @@
 package com.example.demo.product;
 
-import com.example.demo.admin.Admin;
 import com.example.demo.admin.AdminService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.ModelAttribute;
+
+import org.springframework.beans.BeanUtils;
 
 import javax.imageio.IIOImage;
 import javax.imageio.ImageIO;
@@ -17,8 +18,9 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.Iterator;
-import java.util.Optional;
 import java.util.List;
+import java.util.Optional;
+
 
 @Service
 public class ProductService {
@@ -108,18 +110,18 @@ public class ProductService {
     }
 
     public void updateProduct(Product product){
-        Optional<Product> productOptional = productRepository.findByName(product.getName());
+        Optional<Product> productOptional = productRepository.findById(product.getId());
         if(productOptional.isPresent()){
             Product productFromDataBase = productOptional.get();
             if(!product.equals(productFromDataBase)){
-                productFromDataBase = product;
+                BeanUtils.copyProperties(product, productFromDataBase, "isAvailable", "addedByAdmin");
                 productRepository.save(productFromDataBase);
             }
         }
     }
 
-    public void deleteProduct(Product product){
-        Optional<Product> productOptional = productRepository.findByName(product.getName());
+    public void deleteProduct(Integer productId){
+        Optional<Product> productOptional = productRepository.findById(productId);
         if(productOptional.isPresent()){
             productRepository.deleteById(productOptional.get().getId());
         }

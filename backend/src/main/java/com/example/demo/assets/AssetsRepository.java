@@ -18,9 +18,9 @@ public interface AssetsRepository extends CrudRepository<Assets, Long>, AssetsRe
     @Query("SELECT SUM(a.relationSupplies.total) FROM Assets a")
     Integer calculateTotalForSupplies();
 
-    @Query("SELECT SUM(a.relationOrder.total) FROM Assets a WHERE a.relationOrder.creationTime BETWEEN :startTime AND :endTime AND a.relationOrder.total > 0")
+    @Query("SELECT COALESCE(SUM(a.relationOrder.total), 0) FROM Assets a WHERE a.relationOrder.creationTime BETWEEN :startTime AND :endTime AND a.relationOrder.total > 0")
     Integer calculateMonthRevenue(@Param("startTime") Timestamp startTime, @Param("endTime") Timestamp endTime);
 
-    @Query("SELECT SUM(a.relationSupplies.total) FROM Assets a WHERE a.relationSupplies.purchaseTime BETWEEN :startTime AND :endTime AND a.relationSupplies.total > 0")
+    @Query("SELECT COALESCE(SUM(a.relationSupplies.total), 0) FROM Assets a WHERE a.relationSupplies.purchaseTime BETWEEN :startTime AND :endTime AND a.relationSupplies.total > 0")
     Integer calculateMonthCost(@Param("startTime") Date startTime, @Param("endTime") Date endTime);
 }

@@ -1,14 +1,13 @@
-import { Card, Col, Container, Row } from "react-bootstrap";
-import ValueDisplayCard from "../../../components/ValueDisplayCard";
-import TaskIcon from "@mui/icons-material/Task";
 import CalendarMonth from "@mui/icons-material/CalendarMonth";
+import TaskIcon from "@mui/icons-material/Task";
+import { Col, Row } from "react-bootstrap";
+import ValueDisplayCard from "../../../components/ValueDisplayCard";
 
-import LineGraph from "../../../components/LineGraph";
-import FormSearch from "../../../components/FormSearch";
-import useFetch from "../../../components/useFetch";
-import { formatDate } from "../../../components/Date/FormatDate";
-import { useState } from "react";
 import { GridRowSelectionModel } from "@mui/x-data-grid/models/gridRowSelectionModel";
+import { useState } from "react";
+import FormSearch from "../../../components/FormSearch";
+import LineGraph from "../../../components/LineGraph";
+import useFetch from "../../../components/useFetch";
 
 interface AssetsProps {
   id: number;
@@ -45,92 +44,54 @@ export default function Assets() {
     setSelectedRows(newSelection);
   };
 
-  const data = [
-    {
-      name: "一月",
-      lines: { 去年: 4000, 當年: 2400, amt: 2400 },
-    },
-    {
-      name: "二月",
-      lines: { 去年: 3000, 當年: 1398, amt: 2210 },
-    },
-    {
-      name: "三月",
+  interface MonlyTotalProps {
+    month: string;
+    total: number;
+  }
+
+  const token = sessionStorage.getItem("admin_token");
+  if (token === null) return <p>缺少admin_token</p>;
+
+  const year = new Date().getFullYear();
+
+  const currentYearsMonthlyTotal = useFetch<MonlyTotalProps[]>(
+    `http://localhost:8080/assets/years_monthly_summary/${year}?splitIncomeAndExpense=false`,
+    "POST",
+    token
+  );
+
+  const lastYearsMonthlyTotal = useFetch<MonlyTotalProps[]>(
+    `http://localhost:8080/assets/years_monthly_summary/${
+      year - 1
+    }?splitIncomeAndExpense=false`,
+    "POST",
+    token
+  );
+
+  if (currentYearsMonthlyTotal.isLoading || lastYearsMonthlyTotal.isLoading) {
+    return <p>Loading...</p>;
+  }
+
+  if (currentYearsMonthlyTotal.error || lastYearsMonthlyTotal.error) {
+    return (
+      <p>
+        Error：{currentYearsMonthlyTotal.error}, {lastYearsMonthlyTotal.error}
+      </p>
+    );
+  }
+
+  const mergedData = currentYearsMonthlyTotal.data?.map((currentMonthData) => {
+    const lastYearMonthData = lastYearsMonthlyTotal.data?.find(
+      (lastMonth) => lastMonth.month === currentMonthData.month
+    );
+    return {
+      name: currentMonthData.month + "月",
       lines: {
-        去年: 2000,
-        當年: 9800,
-        amt: 2290,
+        當年: currentMonthData.total,
+        去年: lastYearMonthData ? lastYearMonthData.total : 0,
       },
-    },
-    {
-      name: "四月",
-      lines: { 去年: 2780, 當年: 3908, amt: 2000 },
-    },
-    {
-      name: "五月",
-      lines: {
-        去年: 1890,
-        當年: 4800,
-        amt: 2181,
-      },
-    },
-    {
-      name: "六月",
-      lines: {
-        去年: 2390,
-        當年: 3800,
-        amt: 2500,
-      },
-    },
-    {
-      name: "七月",
-      lines: {
-        去年: 3490,
-        當年: 4300,
-        amt: 2100,
-      },
-    },
-    {
-      name: "八月",
-      lines: {
-        去年: 3490,
-        當年: 4300,
-        amt: 2100,
-      },
-    },
-    {
-      name: "九月",
-      lines: {
-        去年: 3490,
-        當年: 4300,
-        amt: 2100,
-      },
-    },
-    {
-      name: "十月",
-      lines: {
-        去年: 3490,
-        當年: 4300,
-        amt: 2100,
-      },
-    },
-    {
-      name: "十一月",
-      lines: {
-        去年: 3490,
-        當年: 4300,
-        amt: 2100,
-      },
-    },
-    {
-      name: "十二月",
-      lines: {
-        去年: 3490,
-        當年: 4300,
-        amt: 2100,
-      },
-    },
-  ];
+    };
+  });
 
   const dataKeys = ["當年", "去年"];
 
@@ -152,11 +113,17 @@ export default function Assets() {
         />
       </Row>
 
-      <Row>
-        <Col xs={12}>
-          <LineGraph label="當年度淨值" data={data} datakeys={dataKeys} />
-        </Col>
-      </Row>
+      {mergedData && (
+        <Row>
+          <Col xs={12}>
+            <LineGraph
+              label="當年度淨值"
+              data={mergedData}
+              datakeys={dataKeys}
+            />
+          </Col>
+        </Row>
+      )}
 
       <FormSearch
         label={"收支總覽查詢"}

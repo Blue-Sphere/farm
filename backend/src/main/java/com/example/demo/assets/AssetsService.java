@@ -12,7 +12,9 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.YearMonth;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Service
 public class AssetsService {
@@ -59,6 +61,45 @@ public class AssetsService {
         LocalDateTime startOfMonth = firstDayOfMonth.atStartOfDay();
         LocalDateTime endOfMonth = lastDayOfMonth.atTime(23,59,59);
         return assetsRepository.calculateMonthCost(Date.valueOf(startOfMonth.toLocalDate()), Date.valueOf(endOfMonth.toLocalDate()));
+    }
+
+    public List<Map<String, Object>> getYearsMonthlySummary(int year, boolean splitIncomeAndExpense){
+
+        List<Map<String, Object>> result = new ArrayList<>();
+
+        Map<String, Integer> yearsMonthRevenue = new HashMap<>();
+        Map<String, Integer> yearsMonthCost = new HashMap<>();
+
+        for(int month=1; month<=12; month++) {
+            YearMonth yearMonth = YearMonth.of(year, month);
+
+            LocalDate firstDayOfMonth = yearMonth.atDay(1);
+            LocalDate lastDayOfMonth = yearMonth.atEndOfMonth();
+
+            LocalDateTime startOfMonth = firstDayOfMonth.atStartOfDay();
+            LocalDateTime endOfMonth = lastDayOfMonth.atTime(23, 59, 59);
+
+            Integer monthRevenue = assetsRepository.calculateMonthRevenue(Timestamp.valueOf(startOfMonth), Timestamp.valueOf(endOfMonth));
+            Integer monthCost = assetsRepository.calculateMonthCost(Date.valueOf(startOfMonth.toLocalDate()), Date.valueOf(endOfMonth.toLocalDate()));
+
+            yearsMonthRevenue.put(Integer.toString(month), monthRevenue);
+            yearsMonthCost.put(Integer.toString(month), monthCost);
+
+            Map<String, Object> monthData = new HashMap<>();
+            if (splitIncomeAndExpense) {
+                monthData.put("month", month);
+                monthData.put("revenue", monthRevenue);
+                monthData.put("cost", monthCost);
+                result.add(monthData);
+                continue;
+            }
+
+            monthData.put("month", month);
+            monthData.put("total", monthRevenue- monthCost);
+            result.add(monthData);
+
+        }
+        return result;
     }
 
     public ArrayList<Integer> getAllMonthAssetsSum(){

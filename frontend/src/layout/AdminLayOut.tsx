@@ -6,27 +6,26 @@ import Drawer from "@mui/material/Drawer";
 import IconButton from "@mui/material/IconButton";
 
 import ChecklistOutlinedIcon from "@mui/icons-material/ChecklistOutlined";
+import InventoryIcon from "@mui/icons-material/Inventory";
 import LogoutIcon from "@mui/icons-material/Logout";
+import ManageAccountsIcon from "@mui/icons-material/ManageAccounts";
+import MenuIcon from "@mui/icons-material/Menu";
+import PaidIcon from "@mui/icons-material/Paid";
+import PeopleAltIcon from "@mui/icons-material/PeopleAlt";
+import PlumbingIcon from "@mui/icons-material/Plumbing";
 import List from "@mui/material/List";
 import ListItem from "@mui/material/ListItem";
 import ListItemButton from "@mui/material/ListItemButton";
 import ListItemIcon from "@mui/material/ListItemIcon";
 import ListItemText from "@mui/material/ListItemText";
-import MailIcon from "@mui/icons-material/Mail";
-import InventoryIcon from "@mui/icons-material/Inventory";
-import MenuIcon from "@mui/icons-material/Menu";
-import ManageAccountsIcon from "@mui/icons-material/ManageAccounts";
-import PaidIcon from "@mui/icons-material/Paid";
-import PlumbingIcon from "@mui/icons-material/Plumbing";
-import PeopleAltIcon from "@mui/icons-material/PeopleAlt";
 
 import Typography from "@mui/material/Typography";
-import { Link, Outlet, redirect, useNavigate } from "react-router-dom";
+import { Link, Outlet, useNavigate } from "react-router-dom";
 
-import BackGround from "/src/assets/img/background/UserLayOut.jpg";
+import { useState } from "react";
 import useFetch from "../components/useFetch";
 import { BasicUserProps } from "../pages/user/Setting";
-import { useState } from "react";
+import BackGround from "/src/assets/img/background/UserLayOut.jpg";
 
 const drawerWidth = 240;
 
