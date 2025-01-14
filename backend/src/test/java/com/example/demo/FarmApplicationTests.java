@@ -21,10 +21,9 @@ class FarmApplicationTests {
 	@Test
 	void testItems() {
 		Optional<Assets> optionalAssets = assetsRepository.findById(1L);
-		if(optionalAssets.isPresent()){
+		if (optionalAssets.isPresent()) {
 			Assets assets = optionalAssets.get();
 			System.out.println(assets.getRelationSupplies().getId());
 		}
 	}
-
 }

@@ -54,6 +54,18 @@ export default function Assets() {
 
   const year = new Date().getFullYear();
 
+  const total = useFetch<number>(
+    `http://localhost:8080/assets/month_all_assets_sum`,
+    "POST",
+    token
+  );
+
+  const monthlyTotal = useFetch<number>(
+    `http://localhost:8080/assets/monthly_total`,
+    "POST",
+    token
+  );
+
   const currentYearsMonthlyTotal = useFetch<MonlyTotalProps[]>(
     `http://localhost:8080/assets/years_monthly_summary/${year}?splitIncomeAndExpense=false`,
     "POST",
@@ -68,16 +80,30 @@ export default function Assets() {
     token
   );
 
-  if (currentYearsMonthlyTotal.isLoading || lastYearsMonthlyTotal.isLoading) {
+  if (
+    total.isLoading ||
+    monthlyTotal.isLoading ||
+    currentYearsMonthlyTotal.isLoading ||
+    lastYearsMonthlyTotal.isLoading
+  ) {
     return <p>Loading...</p>;
   }
 
-  if (currentYearsMonthlyTotal.error || lastYearsMonthlyTotal.error) {
+  if (
+    total.isLoading ||
+    monthlyTotal.isLoading ||
+    currentYearsMonthlyTotal.error ||
+    lastYearsMonthlyTotal.error
+  ) {
     return (
       <p>
         Error：{currentYearsMonthlyTotal.error}, {lastYearsMonthlyTotal.error}
       </p>
     );
+  }
+
+  if (total.data == null || monthlyTotal.data == null) {
+    return <p>null</p>;
   }
 
   const mergedData = currentYearsMonthlyTotal.data?.map((currentMonthData) => {
@@ -100,14 +126,14 @@ export default function Assets() {
       <Row>
         <ValueDisplayCard
           title="總淨值"
-          value={1231423}
+          value={total.data}
           color="Primary"
           icon={<TaskIcon />}
         />
 
         <ValueDisplayCard
           title="月淨值"
-          value={1231423}
+          value={monthlyTotal.data}
           color="Warning"
           icon={<CalendarMonth />}
         />

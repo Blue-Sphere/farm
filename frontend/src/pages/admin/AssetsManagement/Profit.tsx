@@ -24,6 +24,18 @@ export default function Profit() {
 
   const year = new Date().getFullYear();
 
+  const totalProfit = useFetch<number>(
+    `http://localhost:8080/assets/month_all_profit_sum`,
+    "POST",
+    token
+  );
+
+  const monthlyProfit = useFetch<number>(
+    `http://localhost:8080/assets/monthly_revenue`,
+    "POST",
+    token
+  );
+
   const currentYearsMonthlyRevenue = useFetch<SplitedMonlyTotalProps[]>(
     `http://localhost:8080/assets/years_monthly_summary/${year}?splitIncomeAndExpense=true`,
     "POST",
@@ -39,19 +51,30 @@ export default function Profit() {
   );
 
   if (
+    totalProfit.isLoading ||
+    monthlyProfit.isLoading ||
     currentYearsMonthlyRevenue.isLoading ||
     lastYearsMonthlyRevenue.isLoading
   ) {
     return <p>Loading...</p>;
   }
 
-  if (currentYearsMonthlyRevenue.error || lastYearsMonthlyRevenue.error) {
+  if (
+    totalProfit.isLoading ||
+    monthlyProfit.isLoading ||
+    currentYearsMonthlyRevenue.error ||
+    lastYearsMonthlyRevenue.error
+  ) {
     return (
       <p>
         Error：{currentYearsMonthlyRevenue.error},{" "}
         {lastYearsMonthlyRevenue.error}
       </p>
     );
+  }
+
+  if (totalProfit.data == null || monthlyProfit.data == null) {
+    return <p>null</p>;
   }
 
   const mergedData = currentYearsMonthlyRevenue.data?.map(
@@ -75,14 +98,14 @@ export default function Profit() {
       <Row>
         <ValueDisplayCard
           title="總收益"
-          value={1231423}
+          value={totalProfit.data}
           color="Primary"
           icon={<TaskIcon />}
         />
 
         <ValueDisplayCard
           title="月收益"
-          value={1231423}
+          value={monthlyProfit.data}
           color="Warning"
           icon={<CalendarMonth />}
         />

@@ -1,9 +1,9 @@
-import { memo, useCallback, useState } from "react";
-import ValueDisplayCard from "../../../components/ValueDisplayCard";
-import PlumbingIcon from "@mui/icons-material/Plumbing";
 import Inventory2Icon from "@mui/icons-material/Inventory2";
-import { Col, Container, Row } from "react-bootstrap";
+import PlumbingIcon from "@mui/icons-material/Plumbing";
 import { Box, Button } from "@mui/material";
+import { memo, useState } from "react";
+import { Col, Container, Row } from "react-bootstrap";
+import ValueDisplayCard from "../../../components/ValueDisplayCard";
 
 import {
   Autocomplete,
@@ -12,23 +12,21 @@ import {
   DialogTitle,
   IconButton,
   TextField,
-  Typography,
   styled,
 } from "@mui/material";
 
-import FormSearch from "../../../components/FormSearch";
 import CloseIcon from "@mui/icons-material/Close";
-import { DemoItem } from "@mui/x-date-pickers/internals/demo";
+import { GridRowSelectionModel } from "@mui/x-data-grid/models/gridRowSelectionModel";
 import { DatePicker, LocalizationProvider } from "@mui/x-date-pickers";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
+import { DemoItem } from "@mui/x-date-pickers/internals/demo";
 import dayjs from "dayjs";
-import CountControl from "../../../components/Calculate/CountControl";
-import CalculateTotal from "../../../components/Calculate/CalculateTotal";
-import RadioGroup from "../../../components/RadioGroup";
 import Alert from "../../../components/Alert";
-import useFetch from "../../../components/useFetch";
+import CalculateTotal from "../../../components/Calculate/CalculateTotal";
 import { formatDate } from "../../../components/Date/FormatDate";
-import { GridRowSelectionModel } from "@mui/x-data-grid/models/gridRowSelectionModel";
+import FormSearch from "../../../components/FormSearch";
+import RadioGroup from "../../../components/RadioGroup";
+import useFetch from "../../../components/useFetch";
 
 const formatSuppliesData = (data: any) => {
   const rows = data.map((row: any) => ({
@@ -260,19 +258,21 @@ const DialogAddSupplies = memo((props: DialogAddSuppliesProps) => {
       }),
     }).then(async (response) => {
       const message = await response.text();
+      props.onClose();
       if (!response.ok) {
         Alert({
           title: response.status.toString(),
           text: message,
           icon: "error",
-        });
+        })();
         throw new Error(message);
       }
+      props.onClose();
       Alert({
         title: response.status.toString(),
         text: message,
         icon: "success",
-      });
+      })();
     });
   };
 

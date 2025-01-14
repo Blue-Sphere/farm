@@ -1,15 +1,10 @@
 package com.example.demo.assets;
 
-import com.example.demo.View;
-import com.example.demo.order.CriteriaSearchOrderDto;
-import com.example.demo.order.Order;
 import com.example.demo.security.AuthenticationSecurity;
-import com.fasterxml.jackson.annotation.JsonView;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -32,19 +27,24 @@ public class AssetsController {
         return "記錄成功";
     }
 
-    @PostMapping(path = "/get_sum")
-    public Integer getSum(){
-        return assetsService.getSum();
+//    @PostMapping(path = "/get_sum")
+//    public Integer getSum(){
+//        return assetsService.getSum();
+//    }
+
+    @PostMapping(path = "/monthly_total")
+    public Integer getMonthlyTotal(){
+        return assetsService.getMonthlyRevenue()-assetsService.getMonthlyCost();
     }
 
-    @PostMapping(path = "/month_revenue")
+    @PostMapping(path = "/monthly_revenue")
     public Integer getMonthRevenue(){
-        return assetsService.getMonthRevenue();
+        return assetsService.getMonthlyRevenue();
     }
 
-    @PostMapping(path = "/month_cost")
-    public Integer getMonthCost(){
-        return assetsService.getMonthCost();
+    @PostMapping(path = "/monthly_cost")
+    public Integer getMonthlyCost(){
+        return assetsService.getMonthlyCost();
     }
 
     @PostMapping(path = "/years_monthly_summary/{year}")
@@ -55,8 +55,16 @@ public class AssetsController {
     }
 
     @PostMapping(path = "/month_all_assets_sum")
-    public ArrayList<Integer> getMonthAllAssetsSum(){
-        return assetsService.getAllMonthAssetsSum();
+    public Integer getAllAssetsSum(){
+        return assetsService.getSum();
+    }
+    @PostMapping(path = "/month_all_profit_sum")
+    public Integer getAllProfitSum(){
+        return assetsService.getProfitSum();
+    }
+    @PostMapping(path = "/month_all_loss_sum")
+    public Integer getAllLossSum(){
+        return assetsService.getLossSum();
     }
 
     @PostMapping(path = "/criteria_search")

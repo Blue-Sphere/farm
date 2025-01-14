@@ -13,6 +13,7 @@ import java.util.List;
 
 @Component
 public class AdminRepositoryCustomImpl implements AdminRepositoryCustom {
+
     @PersistenceContext
     private EntityManager entityManager;
 
@@ -23,9 +24,10 @@ public class AdminRepositoryCustomImpl implements AdminRepositoryCustom {
 
         List<Predicate> predicates = new ArrayList<>();
 
-        if (criteriaSearchAdminDto.getQueryOptionsForIsAvailable() != null) {
+        if (criteriaSearchAdminDto.getQueryOptions() != null) {
             List<Predicate> statusPredicates = new ArrayList<>();
-            for(boolean option:  criteriaSearchAdminDto.getQueryOptionsForIsAvailable()) {
+            for(boolean option:  criteriaSearchAdminDto.getQueryOptions()) {
+
                 statusPredicates.add(cb.equal(admin.get("isAvailable"), option));
             }
             predicates.add(cb.or(statusPredicates.toArray(new Predicate[0])));

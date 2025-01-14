@@ -3,7 +3,6 @@ package com.example.demo.assets;
 import com.example.demo.admin.Admin;
 import com.example.demo.order.Order;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.cglib.core.Local;
 import org.springframework.stereotype.Service;
 
 import java.sql.Date;
@@ -38,10 +37,18 @@ public class AssetsService {
     }
 
     public Integer getSum(){
-        return assetsRepository.calculateTotalForOrders()- assetsRepository.calculateTotalForOrders();
+        return assetsRepository.calculateTotalForOrders()- assetsRepository.calculateTotalForSupplies();
     }
 
-    public Integer getMonthRevenue(){
+    public Integer getProfitSum(){
+        return assetsRepository.calculateTotalForOrders();
+    }
+
+    public Integer getLossSum(){
+        return assetsRepository.calculateTotalForSupplies();
+    }
+
+    public Integer getMonthlyRevenue(){
         LocalDate currentDateTime = LocalDate.now();
 
         LocalDate firstDayOfMonth = currentDateTime.withDayOfMonth(1);
@@ -52,7 +59,7 @@ public class AssetsService {
         return assetsRepository.calculateMonthRevenue(Timestamp.valueOf(startOfMonth), Timestamp.valueOf(endOfMonth));
     }
 
-    public Integer getMonthCost(){
+    public Integer getMonthlyCost(){
         LocalDate currentDateTime = LocalDate.now();
 
         LocalDate firstDayOfMonth = currentDateTime.withDayOfMonth(1);
@@ -102,7 +109,7 @@ public class AssetsService {
         return result;
     }
 
-    public ArrayList<Integer> getAllMonthAssetsSum(){
+    public ArrayList<Integer> getAllMonthlyAssetsSum(){
         LocalDate currentDate = LocalDate.now();
         ArrayList<Integer> allMonthAssetsSum = new ArrayList<>();
         for(int i=1; i<=12; i++){

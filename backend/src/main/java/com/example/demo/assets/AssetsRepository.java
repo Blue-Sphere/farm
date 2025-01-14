@@ -7,15 +7,14 @@ import org.springframework.stereotype.Repository;
 
 import java.sql.Date;
 import java.sql.Timestamp;
-import java.time.LocalDateTime;
 
 @Repository
 public interface AssetsRepository extends CrudRepository<Assets, Long>, AssetsRepositoryCustom {
 
-    @Query("SELECT SUM(a.relationOrder.total) FROM Assets a")
+    @Query("SELECT COALESCE(SUM(a.relationOrder.total), 0) FROM Assets a")
     Integer calculateTotalForOrders();
 
-    @Query("SELECT SUM(a.relationSupplies.total) FROM Assets a")
+    @Query("SELECT COALESCE(SUM(a.relationSupplies.total), 0) FROM Assets a")
     Integer calculateTotalForSupplies();
 
     @Query("SELECT COALESCE(SUM(a.relationOrder.total), 0) FROM Assets a WHERE a.relationOrder.creationTime BETWEEN :startTime AND :endTime AND a.relationOrder.total > 0")

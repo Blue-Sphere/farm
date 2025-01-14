@@ -229,7 +229,7 @@ const DialogAddSupplies = memo((props: DialogAddSuppliesProps) => {
 
   const [productName, setProductName] = useState("");
 
-  const handleProdictNameChange = (
+  const handleProductNameChange = (
     event: React.ChangeEvent<HTMLInputElement>
   ) => {
     setProductName(event.target.value);
@@ -295,18 +295,20 @@ const DialogAddSupplies = memo((props: DialogAddSuppliesProps) => {
     }).then(async (response) => {
       const message = await response.text();
       if (!response.ok) {
+        props.onClose();
         Alert({
           title: response.status.toString(),
           text: message,
           icon: "error",
-        });
+        })();
         throw new Error(message);
       }
+      props.onClose();
       Alert({
         title: response.status.toString(),
         text: message,
         icon: "success",
-      });
+      })();
     });
   };
 
@@ -347,7 +349,7 @@ const DialogAddSupplies = memo((props: DialogAddSuppliesProps) => {
               sx={{ width: "100%" }}
               label="商品名稱"
               value={productName}
-              onChange={handleProdictNameChange}
+              onChange={handleProductNameChange}
             />
           </Col>
         </Row>

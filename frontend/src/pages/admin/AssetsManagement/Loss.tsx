@@ -24,6 +24,18 @@ export default function Loss() {
 
   const year = new Date().getFullYear();
 
+  const totalLoss = useFetch<number>(
+    `http://localhost:8080/assets/month_all_loss_sum`,
+    "POST",
+    token
+  );
+
+  const monthlyLoss = useFetch<number>(
+    `http://localhost:8080/assets/monthly_cost`,
+    "POST",
+    token
+  );
+
   const currentYearsMonthlyCost = useFetch<SplitedMonlyTotalProps[]>(
     `http://localhost:8080/assets/years_monthly_summary/${year}?splitIncomeAndExpense=true`,
     "POST",
@@ -38,16 +50,30 @@ export default function Loss() {
     token
   );
 
-  if (currentYearsMonthlyCost.isLoading || lastYearsMonthlyCost.isLoading) {
+  if (
+    totalLoss.isLoading ||
+    monthlyLoss.isLoading ||
+    currentYearsMonthlyCost.isLoading ||
+    lastYearsMonthlyCost.isLoading
+  ) {
     return <p>Loading...</p>;
   }
 
-  if (currentYearsMonthlyCost.error || lastYearsMonthlyCost.error) {
+  if (
+    totalLoss.isLoading ||
+    monthlyLoss.isLoading ||
+    currentYearsMonthlyCost.error ||
+    lastYearsMonthlyCost.error
+  ) {
     return (
       <p>
         Error：{currentYearsMonthlyCost.error}, {lastYearsMonthlyCost.error}
       </p>
     );
+  }
+
+  if (totalLoss.data == null || monthlyLoss.data == null) {
+    return <p>null</p>;
   }
 
   const mergedData = currentYearsMonthlyCost.data?.map((currentMonthData) => {
@@ -87,14 +113,14 @@ export default function Loss() {
       <Row>
         <ValueDisplayCard
           title="總費損"
-          value={1231423}
+          value={totalLoss.data}
           color="Primary"
           icon={<TaskIcon />}
         />
 
         <ValueDisplayCard
           title="月費損"
-          value={1231423}
+          value={monthlyLoss.data}
           color="Warning"
           icon={<CalendarMonth />}
         />

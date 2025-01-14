@@ -1,39 +1,21 @@
-import MarkEmailUnreadTwoToneIcon from "@mui/icons-material/MarkEmailUnreadTwoTone";
-import HourglassBottomTwoToneIcon from "@mui/icons-material/HourglassBottomTwoTone";
-import AssignmentTurnedInIcon from "@mui/icons-material/AssignmentTurnedIn";
-
-import { ChangeEvent, memo, useCallback, useState } from "react";
-import ValueDisplayCard from "../../../components/ValueDisplayCard";
-import PlumbingIcon from "@mui/icons-material/Plumbing";
-import Inventory2Icon from "@mui/icons-material/Inventory2";
+import { Button } from "@mui/material";
+import { memo, useState } from "react";
 import { Col, Container, Row } from "react-bootstrap";
-import { Box, Button } from "@mui/material";
+import ValueDisplayCard from "../../../components/ValueDisplayCard";
 
 import {
-  Autocomplete,
   Dialog,
   DialogContent,
   DialogTitle,
   IconButton,
   TextField,
-  Typography,
   styled,
 } from "@mui/material";
 
-import FormSearch from "../../../components/FormSearch";
 import CloseIcon from "@mui/icons-material/Close";
-import { DemoItem } from "@mui/x-date-pickers/internals/demo";
-import { DatePicker, LocalizationProvider } from "@mui/x-date-pickers";
-import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
-import dayjs from "dayjs";
-import CountControl from "../../../components/Calculate/CountControl";
-import CalculateTotal from "../../../components/Calculate/CalculateTotal";
-import RadioGroup from "../../../components/RadioGroup";
-import ShoppingCartIcon from "@mui/icons-material/ShoppingCart";
-import RemoveShoppingCartIcon from "@mui/icons-material/RemoveShoppingCart";
 import PersonIcon from "@mui/icons-material/Person";
-import PersonOffIcon from "@mui/icons-material/PersonOff";
 import { GridRowSelectionModel } from "@mui/x-data-grid/models/gridRowSelectionModel";
+import FormSearch from "../../../components/FormSearch";
 
 const formatAdminData = (data: any) => {
   const rows = data.map((row: any) => ({
@@ -126,11 +108,7 @@ export default function Admin() {
           handleSelectedRowsOnChange={handleRowsSelectedOnChange}
         />
       </Container>
-      <DialogAddSupplies
-        open={dialogOpen}
-        onClose={handleDialogClose}
-        suppliesName={["test", "test2"]}
-      />
+      <DialogAddAdmin open={dialogOpen} onClose={handleDialogClose} />
     </>
   );
 }
@@ -144,52 +122,30 @@ const BootstrapDialog = styled(Dialog)(({ theme }) => ({
   },
 }));
 
-interface DialogAddSuppliesProps {
+interface DialogAddAdminProps {
   open: boolean;
   onClose: () => void;
-  suppliesName: string[];
 }
 
-const DialogAddSupplies = memo((props: DialogAddSuppliesProps) => {
-  const [productName, setProductName] = useState("");
+const DialogAddAdmin = memo((props: DialogAddAdminProps) => {
+  const [usersEmail, setUsersEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [adminsPassword, setAdminsPassword] = useState("");
 
-  const handleProdictNameChange = (
+  const handleUsersEmailChange = (
     event: React.ChangeEvent<HTMLInputElement>
   ) => {
-    setProductName(event.target.value);
+    setUsersEmail(event.target.value);
   };
 
-  const [price, setPrice] = useState<number>(0);
-
-  const handlePriceChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setPrice(Number(event.target.value));
+  const handlePasswordChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setPassword(event.target.value);
   };
 
-  const [quantity, setQuantity] = useState(1);
-
-  const handleQuantityChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setQuantity(Number(event.target.value));
-  };
-
-  const [image, setImage] = useState<string | null>(null);
-
-  const handleImageUpload = (event: ChangeEvent<HTMLInputElement>) => {
-    const file = event.target.files?.[0];
-    if (file) {
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        setImage(reader.result as string);
-      };
-      reader.readAsDataURL(file);
-    }
-  };
-
-  const [description, setDescription] = useState("");
-
-  const handleDescriptionChange = (
+  const handleAdminsPasswordChange = (
     event: React.ChangeEvent<HTMLInputElement>
   ) => {
-    setDescription(event.target.value);
+    setAdminsPassword(event.target.value);
   };
 
   return (
@@ -228,8 +184,8 @@ const DialogAddSupplies = memo((props: DialogAddSuppliesProps) => {
             <TextField
               sx={{ width: "100%" }}
               label="會員Email"
-              value={productName}
-              onChange={handleProdictNameChange}
+              value={usersEmail}
+              onChange={handleUsersEmailChange}
             />
           </Col>
         </Row>
@@ -239,8 +195,8 @@ const DialogAddSupplies = memo((props: DialogAddSuppliesProps) => {
             <TextField
               sx={{ width: "100%" }}
               label="管理員密碼"
-              value={productName}
-              onChange={handleProdictNameChange}
+              value={password}
+              onChange={handlePasswordChange}
             />
           </Col>
         </Row>
@@ -250,8 +206,8 @@ const DialogAddSupplies = memo((props: DialogAddSuppliesProps) => {
             <TextField
               sx={{ width: "100%" }}
               label="確認者密碼"
-              value={productName}
-              onChange={handleProdictNameChange}
+              value={adminsPassword}
+              onChange={handleAdminsPasswordChange}
               color="warning"
             />
           </Col>

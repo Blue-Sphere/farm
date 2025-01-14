@@ -1,13 +1,13 @@
 package com.example.demo.user;
 
-import com.example.demo.order.Order;
-import com.example.demo.supplies.Supplies;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
-import jakarta.persistence.criteria.*;
+import jakarta.persistence.criteria.CriteriaBuilder;
+import jakarta.persistence.criteria.CriteriaQuery;
+import jakarta.persistence.criteria.Predicate;
+import jakarta.persistence.criteria.Root;
 import org.springframework.stereotype.Component;
 
-import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -23,9 +23,9 @@ public class UserRepositoryCustomImpl implements UserRepositoryCustom {
 
         List<Predicate> predicates = new ArrayList<>();
 
-        if (criteriaSearchUserDto.getQueryOptionsForIsAvailable() != null) {
+        if (criteriaSearchUserDto.getQueryOptions() != null) {
             List<Predicate> statusPredicates = new ArrayList<>();
-            for(boolean option:  criteriaSearchUserDto.getQueryOptionsForIsAvailable()) {
+            for(boolean option:  criteriaSearchUserDto.getQueryOptions()) {
                 statusPredicates.add(cb.equal(user.get("isAvailable"), option));
             }
             predicates.add(cb.or(statusPredicates.toArray(new Predicate[0])));

@@ -1,16 +1,14 @@
 package com.example.demo.user;
 
-import java.sql.Date;
-
 public class CriteriaSearchUserDto {
-    private boolean[] queryOptionsForIsAvailable;
+    private boolean[] queryOptions;
 
-    public boolean[] getQueryOptionsForIsAvailable() {
-        return queryOptionsForIsAvailable;
+    public boolean[] getQueryOptions() {
+        return queryOptions;
     }
 
-    public void setQueryOptionsForIsAvailable(boolean[] queryOptionsForIsAvailable) {
-        this.queryOptionsForIsAvailable = queryOptionsForIsAvailable;
+    public void setQueryOptions(boolean[] queryOptions) {
+        this.queryOptions = queryOptions;
     }
 
 }
