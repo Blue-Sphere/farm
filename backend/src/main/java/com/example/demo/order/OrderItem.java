@@ -1,7 +1,8 @@
 package com.example.demo.order;
+
 import com.example.demo.View;
 import com.example.demo.product.Product;
-import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonView;
 import jakarta.persistence.*;
 
@@ -12,13 +13,13 @@ public class OrderItem {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne(targetEntity = Order.class, cascade = CascadeType.ALL)
+    @ManyToOne
     @JoinColumn(name = "order_id", referencedColumnName = "id")
-    @JsonIgnore
+    @JsonBackReference // 解決循環依賴
     private Order order;
 
     @JsonView({View.OrderInfo.class})
-    @ManyToOne(targetEntity = Product.class, cascade = CascadeType.MERGE)
+    @ManyToOne(targetEntity = Product.class, cascade = CascadeType.REMOVE)
     @JoinColumn(name = "product_id", referencedColumnName = "id")
     private Product product;
 

@@ -3,7 +3,6 @@ package com.example.demo.order;
 import com.example.demo.View;
 import com.example.demo.assets.Assets;
 import com.example.demo.user.User;
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonView;
 import jakarta.persistence.*;
 
@@ -30,12 +29,12 @@ public class Order {
     private Timestamp creationTime;
 
     @JsonView({View.OrderInfo.class})
-    @ManyToOne(targetEntity = User.class)
+    @ManyToOne
     @JoinColumn(name="user_id", referencedColumnName = "id")
     private User boughtByUser;
 
     @JsonView({View.OrderInfo.class})
-    @OneToMany(mappedBy="order", cascade=CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy="order", cascade=CascadeType.ALL , orphanRemoval = true)
     private List<OrderItem> orderItems = new ArrayList<>();
 
     @JsonView({View.OrderInfo.class})

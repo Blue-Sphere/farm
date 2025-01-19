@@ -1,10 +1,14 @@
 package com.example.demo.user;
 
 import com.example.demo.View;
+import com.example.demo.order.Order;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonView;
 import jakarta.persistence.*;
 
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Table(name = "User")
@@ -27,6 +31,10 @@ public class User implements Serializable {
 
     @Column(unique = true)
     private String lineId;
+
+    @OneToMany(mappedBy = "boughtByUser", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonIgnore
+    private List<Order> orders = new ArrayList<>();
 
     @Column(unique = false)
     private String verificationCode;
